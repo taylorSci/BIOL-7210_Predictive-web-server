@@ -1,4 +1,5 @@
-##Team 1- Predictive Webserver 
+## Team 1- Predictive Webserver 
+
 **Members**: Gargi Damle, Sara Cleland, Taylor Hoyt, Swapna Kannan, Yifan Liang, Anantharaman Shantaraman, James Matthew Hamilton
 
 **Description**: This tool is a webserver for analyzing environmental bacterial samples. 
