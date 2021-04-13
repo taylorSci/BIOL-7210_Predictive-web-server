@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends 'foodbornePathogen/base.html' %}
+<head>
+    <meta charset="UTF-8">
+    <title>FbP Server</title>
+</head>
+<body>
+    {% block content %}
+    <main>
+        <p>
+            FbP server features a full genomics pipeline for analysis of foodborne bacterial isolates.
+            It includes genome assembly, gene prediction, functional annotation, & comparative genomics pipeline stages.
+            Any contiguous range of pipeline stages can be run on a set of isolates.
+            The comparative genomics stage features some analyses that will only function if multiple isolates are provided.
+        </p>
+        {% load static %}
+        {# <img src="{% static 'foodbornePathogen/img/overall_schematic.png' %}" alt="full pipeline schematic"> #}
+        <img src="{% static 'foodbornePathogen/img/test_im.png' %}" alt="full pipeline schematic">
+    </main>
+    {% endblock %}
+</body>
+</html>

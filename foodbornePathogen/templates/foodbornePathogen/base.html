@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <base href="http://127.0.0.1:8000/fbp/">  {# SWITCH FROM LOCAL TO SERVER DOMAIN NAME #}
+        {# <base href="https://team1.predict2021.biosci.gatech.edu/fbp/"> #}
+    </head>
+    <body>
+        <header>
+            <h1>Foodborne Pathogen Predictive Web Server</h1>
+            <nav>
+                <a href="">Home</a>
+                <span>
+                    <button class="dropdown-button">Pipeline</button>
+                    <div class="dropdown-content">
+                        {% for pipeRange in range_choices %}
+                        <a href="options/{{ pipeRange.0 }}">{{ pipeRange.1 }}</a>
+                        {% endfor %}
+                    </div>
+                </span>
+                <a href="terms">Terms</a>
+                <a href="https://github.gatech.edu/comgenomics2021/Team1-WebServer" target="_blank">Git</a>
+                <a href="https://compgenomics2021.biosci.gatech.edu/Team_I_Webserver" target="_blank">Wiki</a>
+            </nav>
+        </header>
+
+        {% block content %}
+        <main></main>
+        {% endblock %}
+
+        <footer>
+            <p>
+                This web server is supported by the Georgia Institute of Technology.
+            </p>
+        </footer>
+    </body>
+</html>
