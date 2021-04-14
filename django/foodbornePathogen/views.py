@@ -79,7 +79,7 @@ def options(request, **kwargs):
         job.save()
 
         # Make isolates & samples
-        for file in request.FILES.values():
+        for file in request.FILES.getlist('upload'):
             isolate = Isolate(user=user, upload=file)
             isolate.save()
             sample = Sample(isolate=isolate, job=job)
@@ -98,17 +98,6 @@ def options(request, **kwargs):
         newJob = Thread(target=run_job, args=(userEmail, request.FILES.values(), job, params))
         newJob.start()
 
-        ### DIAGNOSTIC CODE  # TODO troubleshoot multiple file upload
-        for k, v in request.POST.items():
-            print(f"{k}: {v}")
-        print('------------------')
-        for i, e in enumerate(request.FILES.getlist('file_field')):
-            print(f'{i}: {e}')
-        print('------------------')
-        for k, v in request.FILES.items():
-            print(f"{k}: {v} ({type(v)})")
-        ### DIAGNOSTIC CODE
-
         return HttpResponseRedirect(f'/fbp/submitted/{job}')
 
 
@@ -118,7 +107,7 @@ def submitted(request, **kwargs):
     return render(request, 'foodbornePathogen/submitted.html', context)
 
 
-def results(request, **kwargs):
+def results(request, **kwargs):  # TODO Construct results page
     context = deepcopy(CONTEXT)
     context['userDir'] = f"{MEDIA_ROOT}{Job.objects.get(id=kwargs['job_id']).user.email}"
     return render(request, 'foodbornePathogen/results.html', context)

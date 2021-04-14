@@ -57,7 +57,7 @@ class Isolate(models.Model):
     analysesAvailable = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.upload
+        return str(self.upload)
 
 
 class Job(models.Model):
