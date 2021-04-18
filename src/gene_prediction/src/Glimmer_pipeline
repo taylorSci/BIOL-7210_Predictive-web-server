@@ -1,0 +1,61 @@
+#!/bin/bash
+
+#Install Glimmer
+#conda install -c bioconda glimmer
+
+#Make output directories for Glimmer
+#mkdir home/team1/gene_prediction/Tools/Glimmer home/team1/gene_prediction/Tools/Glimmer/Glimmer_output
+
+#Duplicate a running script for Glimmer
+#cp /home/team1/gene_prediction/DevOps/anaconda3/pkgs/glimmer-3.02-he1b5a44_4/bin/g3-from-scratch.csh home/team1/gene_prediction/Tools/Glimmer/Glimmer.csh
+
+
+
+
+####Trouble shooting for the error: no csh
+
+#Install tcsh
+#conda install -c conda-forge tcsh
+
+#Make a symlink for csh
+#ln -s /home/team1/gene_prediction/DevOps/anaconda3/bin/tcsh /home/team1/gene_prediction/DevOps/anaconda3/bin/csh
+
+#Update a running script for Glimmer manually
+##!/home/team1/gene_prediction/DevOps/anaconda3//bin/csh
+#set awkpath = /home/team1/gene_prediction/DevOps/anaconda3/pkgs/glimmer-3.02-he1b5a44_4/bin
+#set glimmerpath = /home/team1/gene_prediction/DevOps/anaconda3/pkgs/glimmer-3.02-he1b5a44_4/bin
+
+
+
+
+####Trouble shooting for the error: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.21' not found
+####Trouble shooting for the error: /lib64/libstdc++.so.6: version `CXXABI_1.3.9' not found
+
+#Install GCC version 6
+#conda install -c omgarcia gcc-6
+
+#Install conda gcc tools
+#conda install libgcc
+
+#Make sure that you see GLIBCXX_3.4.21 on the list
+#strings /home/team1/gene_prediction/DevOps/anaconda3/lib/libstdc++.so.6.0.22 | grep GLIBCXX
+
+#Make sure that you see CXXABI_1.3.9 on the list
+#strings /home/team1/gene_prediction/DevOps/anaconda3/lib/libstdc++.so.6.0.22 | grep CXXABI
+
+#Make a symlink for csh libstdc++.so.6
+#ln -s /home/team1/gene_prediction/DevOps/anaconda3/lib/libstdc++.so.6.0.22 /home/team1/gene_prediction/DevOps/anaconda3/lib/libstdc++.so.6
+
+
+
+
+#Update library paths
+export LD_LIBRARY_PATH=/home/team1/gene_prediction/DevOps/anaconda3/lib:$LD_LIBRARY_PATH
+
+#Run Glimmer: ./Glimmer.csh <input> <output location & prefix>
+cd /home/team1/gene_prediction/Tools/Glimmer
+./home/team1/gene_prediction/Tools/Glimmer/Glimmer.csh /home/team1/gene_prediction/ecoli_ATCC11775.fasta /home/team1/gene_prediction/Tools/Glimmer/Glimmer_Out/Glimmer
+
+#Convert Glimmer output
+./GFF3_Conversion.py /home/team1/gene_prediction/Tools/Glimmer/Glimmer_Out/Glimmer.predict > /home/team1/gene_prediction/Tools/Glimmer/Glimmer_Out/Glimmer.gff
+
