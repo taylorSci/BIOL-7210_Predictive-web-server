@@ -2,6 +2,7 @@ from copy import deepcopy
 from collections import namedtuple
 from threading import Thread
 
+
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist

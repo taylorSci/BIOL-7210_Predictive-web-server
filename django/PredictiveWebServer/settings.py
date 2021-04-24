@@ -9,12 +9,11 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
@@ -25,8 +24,7 @@ SECRET_KEY = '!&ytf56gzl&fu9!06pex8nbrma%dq!pgq+&u&3p20rz82ml1!y'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = [ '130.207.66.246', 'team1.predict2021.biosci.gatech.edu' ]
 
 # Application definition
 
@@ -122,5 +120,7 @@ STATIC_URL = '/static/'
 
 MEDIA_URL = '/media/'
 
-MEDIA_ROOT = '/home/taylor/Desktop/class/BIOL7210/Team1-PredictiveWebServer/media/'  # TODO change for server deployment
-# MEDIA_ROOT = '/projects/team-1/data/'
+#MEDIA_ROOT = '/home/taylor/Desktop/class/BIOL7210/Team1-PredictiveWebServer/media/'  # TODO change for server deployment
+MEDIA_ROOT = '/projects/team-1/data/'
+#STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+
