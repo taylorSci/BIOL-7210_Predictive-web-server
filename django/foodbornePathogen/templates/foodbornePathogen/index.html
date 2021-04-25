@@ -1,23 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
-{% extends 'foodbornePathogen/base.html' %}
+{% extends "base.html" %}
 <head>
     <meta charset="UTF-8">
     <title>FbP Server</title>
+    
+	<link rel="stylesheet" href="../../static/foodbornePathogen/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../../static/foodbornePathogen/css/font-awesome.min.css">
+	<link rel="stylesheet" href="../../static/foodbornePathogen/css/simple-line-icons.css">
+	<link rel="stylesheet" href="../../static/foodbornePathogen/css/animate.css">
+	<link rel="stylesheet" href="../../static/foodbornePathogen/css/templatemo_style.css">
 </head>
 <body>
-    {% block content %}
-    <main>
-        <p>
-            FbP server features a full genomics pipeline for analysis of foodborne bacterial isolates.
-            It includes genome assembly, gene prediction, functional annotation, & comparative genomics pipeline stages.
-            Any contiguous range of pipeline stages can be run on a set of isolates.
-            The comparative genomics stage features some analyses that will only function if multiple isolates are provided.
-        </p>
-        {% load static %}
-        {# <img src="{% static 'foodbornePathogen/img/overall_schematic.png' %}" alt="full pipeline schematic"> #}
-        <img src="{% static 'foodbornePathogen/img/test_im.png' %}" alt="full pipeline schematic">
-    </main>
-    {% endblock %}
+    
+
+<div id="menu-container">
+		<div id="menu-1" class="homepage home-section container">
+			<div class="home-intro text-center">
+				<h2 class="welcome-title animated fadeInLeft">Introduction</h2>
+				<p class="animated fadeInRight"> FbP server features a full genomics pipeline for analysis of foodborne bacterial isolates. It includes genome assembly, gene prediction, functional annotation, & comparative genomics pipeline stages. Any contiguous range of pipeline stages can be run on a set of isolates. The comparative genomics stage features some analyses that will only function if multiple isolates are provided. </p>
+			</div>
+			<div class="home-projects">
+				<div class="row">
+					<div class="col-md-6 col-sm-12">
+						<div class="project-title animated fadeInUp">
+							<h2>Pipeline Details</h2>
+							<p>This pipeline runs four steps - Genome Assembly, Gene Prediction, Functional Annotations and Comparative Genomics. </p>
+							<a href="#" class="pink-button">Pipeline</a>
+						</div>
+					</div>
+					<div class="project-home-holder col-md-6 col-sm-12">
+						<div class="row">
+							<div class="col-md-6 col-sm-6">
+								<div class="project-item one animated fadeInRight">
+									<img src="img/1.jpg" alt="">
+									<div class="overlay">
+										<h4><a href="ADD LINK">Genome Assembly</a></h4>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6 col-sm-6">
+								<div class="project-item two animated fadeInRight">
+									<img src="img/2.jpg" alt="">
+									<div class="overlay">
+										<h4><a href="ADD LINK">Gene Prediction</a></h4>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6 col-sm-6">
+								<div class="project-item three animated fadeInRight">
+									<img src="img/3.jpg" alt="">
+									<div class="overlay">
+										<h4><a href="ADD LINK">Functional Annonation</a></h4>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6 col-sm-6">
+								<div class="project-item four animated fadeInRight">
+									<img src="img/4.jpg" alt="">
+									<div class="overlay">
+										<h4><a href="ADD LINK">Comparative Genomics</a></h4>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		
+									
+			</div>
+		</div>
 </body>
 </html>
+
