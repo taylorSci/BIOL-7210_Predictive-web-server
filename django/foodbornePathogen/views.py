@@ -2,7 +2,6 @@ from copy import deepcopy
 from collections import namedtuple
 from threading import Thread
 
-
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
@@ -10,6 +9,13 @@ from django.core.mail import send_mail
 
 from .models import *
 from .forms import *
+
+import subprocess
+from subprocess import PIPE
+import logging
+logger = logging.getLogger("django")  # /projects/team-1/django/django.log
+
+from django.http import HttpResponse
 
 BASE_URL = "https://team1.predict2021.biosci.gatech.edu/"
 
@@ -25,11 +31,106 @@ MESSAGE = "Thank you for submitting your job to the Spring 2021 Computational Ge
           "Thank you,\n" \
           "BIOL 7210 Team 1"
 
+def run_bash_command_in_different_env(command, env):
+    logger.info("Running Bash Command: " + str(command))
+    
+    full_command = 'bash -c ' \
+        ' "source /projects/team-1/devops/anaconda3/etc/profile.d/conda.sh; ' \
+        ' conda activate ' \
+        + env + ' ; ' \
+        + command + ' "'
+    logger.debug("Full Python Subrocess Command: " + str(full_command))
 
+    out = subprocess.run(full_command, shell=True, stdout=subprocess.DEVNULL)
+    logger.debug("Subrocess Log: " + str(out))
+
+
+def genome_assembly_pipeline(input_dir, output_dir, **options):
+    logger.info("Genome Assembly Pipeline Selected")
+    # Fill in code here Sara. - Matthew
+    logger.info("Genome Assembly Pipeline Done...")
+
+    
+def gene_prediction_pipeline(input_dir, output_dir, **options):
+    logger.info("Gene Prediction Pipeline Selected")
+    command = '/projects/team-1/src/gene_prediction/src/fake_gene_prediction_master.py' \
+        ' -i ' + input_dir + \
+        ' -o ' + output_dir + \
+        ' -t ' + str(options.get("threads"))
+    run_bash_command_in_different_env(command, "gene_prediction")
+    logger.info("Gene Prediction Pipeline Done...")
+
+    
+def functional_annotation_pipeline(input_dir, output_dir, **options):
+    logger.info("Functional Annotation Pipeline Selected")
+    # Fill in code here Sara. - Matthew
+    logger.info("Functional Annotation Pipeline Done...")
+
+
+def comparative_genomics_pipeline(input_dir, output_dir, **options):
+    logger.info("Comparative Genomics Pipeline Selected")
+    # Fill in code here Sara. - Matthew
+    logger.info("Comparative Genomics Pipeline Done...")
+
+    
 def run_job(clientEmail, files, job, params):
-    # Run pipeline  TODO Call pipeline scripts
-    pass
+    # clientemail - clientemail is the path.
+    # files - basename (need full math from MEDIA_ROOT).
+    # job - piepline stage tobe run (Class from models.py)
+    # params - UI text box fields. print(params.items) to find out params.
 
+    # If you want the fullpath - MEDIA_ROOT/clientemail/files
+
+    logger.info('------------ run_job(clientEmail, files, job, params) -----------')
+    logger.debug('clientEmail = ' + clientEmail)
+    logger.debug('job.id = ' + str(job.id))
+    logger.debug('job.pipeRange = ' + str(job.pipeRange))
+
+    if job.pipeRange == 0:  # Full Pipeline
+        genome_assembly_pipeline(
+            input_dir = 'Unknown', \
+            output_dir = 'Unknown')
+        # Simply use the output of previous pipeline as input for next. - Matthew
+        gene_prediction_pipeline(
+            input_dir = 'projects/team-1/src/gene_prediction/data/input/', \ 
+            output_dir = 'projects/team-1/src/gene_prediction/data/output/',\
+            threads = 3)
+        # Simply use the output of previous pipeline as input for next. - Matthew
+        functional_annotation_pipeline(
+            input_dir = 'Unknown', \
+            output_dir = 'Unknown')
+        # Simply use the output of previous pipeline as input for next. - Matthew
+        comparative_genomics_pipeline(
+            input_dir = 'Unknown', \
+            output_dir = 'Unknown')
+        
+    elif job.pipeRange == 1:
+        genome_assembly_pipeline(
+            input_dir = 'Unknown', \
+            output_dir = 'Unknown')
+        
+    elif job.pipeRange == 2:
+        gene_prediction_pipeline(
+            input_dir = 'projects/team-1/src/gene_prediction/data/input/', \
+            output_dir = 'projects/team-1/src/gene_prediction/data/output/',\
+            threads = 3)
+        
+    elif job.pipeRange == 3:
+        functional_annotation_pipeline(
+            input_dir = 'Unknown', \
+            output_dir = 'Unknown')
+        
+    elif job.pipeRange == 4:
+        comparative_genomics_pipeline(
+            input_dir = 'Unknown', \
+            output_dir = 'Unknown')
+    # 5 GA - GP
+    # 6 GA - FA
+    # 7 GP - FA
+    # 8 GP - CG
+    # 9 FA - CG
+
+    # Alternative is just to print out the link on results.
     # Contact user  TODO Figure out how to send email
     send_mail("Foodborn Pathogen job completed", MESSAGE.format(BASE_URL, job.id), from_email=None, recipient_list=[clientEmail])
 
