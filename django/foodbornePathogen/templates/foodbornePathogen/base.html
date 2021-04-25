@@ -31,16 +31,32 @@ http://www.templatemo.com/preview/templatemo_421_raleway
 						<ul class="main-menu">
 							<li><a class="show-1 Pipeline" href="options.html">Pipeline</a></li>
 							<li><a class="show-2 Results" href="results.html">Results</a></li>
-							<li><a class="show-3 Wiki" href="https://compgenomics2021.biosci.gatech.edu/Team_I_Webserver">Wiki</a></li>
-							<li><a class="show-4 Github" href="https://github.gatech.edu/comgenomics2021/Team1-WebServer">Github</a></li>
+							<li><div class="dropdown">
+                                                        	<button onclick="myFunction()" class="dropbtn">Run Pipeline</button>
+  								<div id="myDropdown" class="dropdown-content">
+    									<a href="#">Full Pipeline</a>
+    									<a href="#">Genome Assembly</a>
+    									<a href="#">Gene Prediction</a>
+    									<a href="#">Functional Annotation</a>
+    									<a href="#">Comparative Genomics</a>
+  								</div>
+							</div></li>
 						</ul>
 					</nav>
 					<nav class="main-navigation menu-responsive hidden-md hidden-lg">
 						<ul class="main-menu">
 							<li><a class="show-1 Pipeline" href="options.html">Pipeline</a></li>
 							<li><a class="show-2 Results" href="results.html">Results</a></li>
-							<li><a class="show-3 Wiki" href="https://compgenomics2021.biosci.gatech.edu/Team_I_Webserver">Wiki</a></li>
-							<li><a class="show-4 Github" href="https://github.gatech.edu/comgenomics2021/Team1-WebServer">Github</a></li>
+							<li><div class="dropdown">
+                                                        	<button onclick="myFunction()" class="dropbtn">Run Pipeline</button>
+  								<div id="myDropdown" class="dropdown-content">
+    									<a href="#">Full Pipeline</a>
+    									<a href="#">Genome Assembly</a>
+    									<a href="#">Gene Prediction</a>
+    									<a href="#">Functional Annotation</a>
+    									<a href="#">Comparative Genomics</a>
+  								</div>
+							</div></li>
 						</ul>
 					</nav>
 				</div>
@@ -50,8 +66,18 @@ http://www.templatemo.com/preview/templatemo_421_raleway
 	
 	<footer class="site-footer container text-center">
 		<div class="row">
+			<div class="col-md-12">
+				<div class="main-footer">
+					<ul class="social">
+						<li><a href="https://github.gatech.edu/comgenomics2021/Team1-WebServer">GitHub</a></li>
+						<li><a href="https://compgenomics2021.biosci.gatech.edu/Team_I_Webserver">Wiki</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="row">
 			<div class="col-md-12 copyright">
-				<p>Copyright &copy; 2021 <a href="#">Georgia Institute of Technology</a></p>
+				<p>This web server is supported by the Georgia Institute of Technology. &copy; 2021</a></p>
 			</div>
 		</div>
 	</footer>
@@ -63,7 +89,7 @@ http://www.templatemo.com/preview/templatemo_421_raleway
 	<span class="shape-1"></span>
 	<span class="shape-2"></span>
 
-	<script src="js/jquery.min.js"></script>
-	<script src="js/templatemo_custom.js"></script>
+	<script src="../../static/foodbornePathogen/js/jquery.min.js"></script>
+	<script src="../../static/foodbornePathogen/js/templatemo_custom.js"></script>
 </body>
 </html>
