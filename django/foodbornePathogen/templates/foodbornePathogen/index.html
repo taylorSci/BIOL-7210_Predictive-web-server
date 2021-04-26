@@ -1,13 +1,15 @@
 <!DOCTYPE html>
+
 <html lang="en">
 {% extends "foodbornePathogen/base.html" %}
+{% load static %}
 <head>
     <meta charset="UTF-8">
     <title>FbP Server</title>
 
 </head>
 <body>
-    
+{% block content %}
 
 <div id="menu-container">
 		<div id="menu-1" class="homepage home-section container">
@@ -21,7 +23,7 @@
 						<div class="project-title animated fadeInUp">
 							<h2>Pipeline Details</h2>
 							<p>This pipeline runs four steps - Genome Assembly, Gene Prediction, Functional Annotations and Comparative Genomics. </p>
-							<a href="#" class="pink-button">Pipeline</a>
+							<a href="options/GA-CG" class="pink-button">Pipeline</a>
 						</div>
 					</div>
 					<div class="project-home-holder col-md-6 col-sm-12">
@@ -68,6 +70,7 @@
 									
 			</div>
 		</div>
+{% endblock %}		
 </body>
 </html>
 

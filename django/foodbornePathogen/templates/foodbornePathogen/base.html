@@ -4,6 +4,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
+	<base href="/fbp/">
+        <!--base href="https://team1.predict2021.biosci.gatech.edu/fbp/"--->
 	<title>Campylobacter Jejuni Predictive Web Server</title>
 <!--
 Raleway Template 
@@ -15,8 +17,8 @@ http://www.templatemo.com/preview/templatemo_421_raleway
 	<link rel="stylesheet" href="../../static/foodbornePathogen/css/animate.css">
 	<link rel="stylesheet" href="../../static/foodbornePathogen/css/templatemo_style.css">
 	
-	<link rel="stylesheet" href="../../static/foodbornePathogen/js/jquery.min.js"></script>
-	<link rel="stylesheet" href="../../static/foodbornePathogen/js/templatemo_custom.js"></script>
+	<script src="../../static/foodbornePathogen/js/jquery.min.js"></script>
+	<script src="../../static/foodbornePathogen/js/templatemo_custom.js"></script>
 </head>
 <body>
 	<header class="site-header container animated fadeInDown">
@@ -33,31 +35,28 @@ http://www.templatemo.com/preview/templatemo_421_raleway
 				<div class="col-md-8">
 					<nav id="nav" class="main-navigation hidden-xs hidden-sm">
 						<ul class="main-menu">
+							<li><a class="show-1 active homebutton" href="index">Home</a></li>
 							      	<li><div class="dropdown">
 							      	<button onclick="myFunction()" class="dropbtn">Run Pipeline</button>
   								<div id="myDropdown" class="dropdown-content">
-    									<a href=" options/Full Pipeline">Full Pipeline</a>
-    									<a href=" options/GA-GP">Genome Assembly</a>
-    									<a href=" options/GA-FA">Gene Prediction</a>
-    									<a href=" options/GP-FA">Functional Annotation</a>
-    									<a href=" options/CG-GC">Comparative Genomics</a>
+                        						{% for pipeRange in range_choices %}
+                        						<a href="options/{{ pipeRange.0 }}">{{ pipeRange.1 }}</a>
+                        						{% endfor %}
   								</div>
-							<li><a class="show-1 Results" href="results.html">Results</a></li>
-							</div></li>
+  							</div></li>
 						</ul>
 					</nav>
 					<nav class="main-navigation menu-responsive hidden-md hidden-lg">
 						<ul class="main-menu">
+							li> <a class="show-1 active homebutton" href="/">Home</a></li>
 								<li><div class="dropdown">
 							      	<button onclick="myFunction()" class="dropbtn">Run Pipeline</button>
   								<div id="myDropdown" class="dropdown-content">
-    									<a href=" options/Full Pipeline">Full Pipeline</a>
-    									<a href=" options/GA-GP">Genome Assembly</a>
-    									<a href=" options/GA-FA">Gene Prediction</a>
-    									<a href=" options/GP-FA">Functional Annotation</a>
-    									<a href=" options/CG-GC">Comparative Genomics</a>
+    									{% for pipeRange in range_choices %}
+                        						<a href="options/{{ pipeRange.0 }}">{{ pipeRange.1 }}</a>
+                        						{% endfor %}
   								</div>
-							<li><a class="show-1 Results" href="results.html">Results</a></li>
+							
 							</div></li>
 						</ul>
 					</nav>
