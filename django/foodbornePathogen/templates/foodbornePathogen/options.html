@@ -8,7 +8,7 @@
 	
 </head>
 <body>
-    {% block content %}
+{% block content %}
     <main>
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
@@ -20,12 +20,14 @@
             {% for stage in stages %}
                 {# <img src="{% static 'foodbornePathogen/img/{{ stage.name }}_schematic.png' %}" alt="stage schematic"> #}
                 <img src="{% static 'foodbornePathogen/img/test_im.png' %}" alt="stage schematic">
-                {{ stage.form }}
+                <table border= "1">
+                    {{ stage.form }}
+                </table>
                 <br>
             {% endfor %}
             <input type="submit" value="Submit Job">
         </form>
     </main>
-    {% endblock %}
+{% endblock %}
 </body>
 </html>
