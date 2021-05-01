@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends 'foodbornePathogen/base.html' %}
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
+    <title>Pipeline Information</title>
+</head>
+<body>
+{% block content %}
+	<main>
+	<div class="home-intro text-center">
+				<h2 class="welcome-title animated fadeInLeft">Pipeline Information</h2>
+				<p class="animated fadeInRight"> Below is an informational image depicting the stages in the pipeline and various inputs and outputs. </p>
+			</div>
+		<p style="text-align:center;"> <img src="{% static 'foodbornePathogen/img/pipeline.jpg' %}" alt="pipeline" class="center">
+	</main>
+{% endblock %}
+</body>
+</html>
+

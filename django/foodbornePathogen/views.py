@@ -37,7 +37,10 @@ def index(request):
     context = deepcopy(CONTEXT)
     return render(request, 'foodbornePathogen/index.html', context)
 
-
+def info(request):
+    context = deepcopy(CONTEXT)
+    return render(request, 'foodbornePathogen/info.html', context)
+    
 def terms(request):
     context = deepcopy(CONTEXT)
     return render(request, 'foodbornePathogen/terms.html', context)
