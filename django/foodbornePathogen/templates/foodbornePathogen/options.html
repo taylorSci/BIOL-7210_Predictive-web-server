@@ -13,10 +13,10 @@
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {% load static %}
-
+            <table border= "1">
             {{ user }}
             {{ upload }}
-
+            </table>
             {% for stage in stages %}
                 {# <img src="{% static 'foodbornePathogen/img/{{ stage.name }}_schematic.png' %}" alt="stage schematic"> #}
                 <img src="{% static 'foodbornePathogen/img/test_im.png' %}" alt="stage schematic">
