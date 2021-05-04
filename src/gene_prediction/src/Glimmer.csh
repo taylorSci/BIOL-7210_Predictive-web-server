@@ -1,4 +1,4 @@
-#!/projects/team-1/devops/anaconda3/envs/webserver/bin/csh
+#!/projects/team-1/devops/anaconda3/envs/gene_prediction/bin/csh
 
 if ($#argv < 2) then
   echo "Usage:  g3-from-scratch.csh  <genome> <tag>"
