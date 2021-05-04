@@ -1,4 +1,4 @@
-#!/projects/team-1/devops/anaconda3/envs/webserver/bin/python3
+#!/projects/team-1/devops/anaconda3/envs/gene_prediction/bin/python3
 
 import argparse
 import subprocess
@@ -17,34 +17,36 @@ parser.add_argument("-gl", action="store_true", help="run glimmer")
 args=parser.parse_args()
 
 gff_output= args.o + "/gene_prediction_output/gff_output/"
+prediction_script="/projects/team-1/src/gene_prediction/src/gene_prediction_pipeline.py"
+merge_script="/projects/team-1/src/gene_prediction/src/merge.py"
 
 if args.gm==True and args.p==True and args.gl==True:
-	subprocess.call(["./gene_prediction_pipeline.py", "-i", args.i, "-t", args.t, "-o", args.o, "-gm", "-p", "-gl"])
-	subprocess.call(["./merge.py", "-i", gff_output, "-f", args.i, "-o", args.o + "/gene_prediction_output/", "-gm", "-p", "-gl"])
+	subprocess.call([prediction_script, "-i", args.i, "-t", args.t, "-o", args.o, "-gm", "-p", "-gl"])
+	subprocess.call([merge_script, "-i", gff_output, "-f", args.i, "-o", args.o, "-gm", "-p", "-gl"])
+
 elif args.p==True and args.gm==True:
-	subprocess.call(["./gene_prediction_pipeline.py", "-i", args.i, "-t", args.t, "-o", args.o, "-gm", "-p"])
-	subprocess.call(["./merge.py", "-i", gff_output, "-f", args.i, "-o", args.o + "/gene_prediction_output/", "-gm", "-p"])
+	subprocess.call([prediction_script, "-i", args.i, "-t", args.t, "-o", args.o, "-gm", "-p"])
+	subprocess.call([merge_script, "-i", gff_output, "-f", args.i, "-o", args.o + "/gene_prediction_output/", "-gm", "-p"])
 
 elif args.gl==True and args.gm==True:
-	subprocess.call(["./gene_prediction_pipeline.py", "-i", args.i, "-t", args.t, "-o", args.o, "-gm", "-gl"])
-	subprocess.call(["./merge.py", "-i", gff_output, "-f", args.i, "-o", args.o + "/gene_prediction_output/", "-gm", "-gl"])
+	subprocess.call([prediction_script, "-i", args.i, "-t", args.t, "-o", args.o, "-gm", "-gl"])
+	subprocess.call([merge_script, "-i", gff_output, "-f", args.i, "-o", args.o + "/gene_prediction_output/", "-gm", "-gl"])
 
 elif args.gl==True and args.p==True:
-	subprocess.call(["./gene_prediction_pipeline.py", "-i", args.i, "-t", args.t, "-o", args.o, "-p", "-gl"])
-	subprocess.call(["./merge.py", "-i", gff_output, "-f", args.i, "-o", args.o + "/gene_prediction_output/", "-p", "-gl"])
+	subprocess.call([prediction_script, "-i", args.i, "-t", args.t, "-o", args.o, "-p", "-gl"])
+	subprocess.call([merge_script, "-i", gff_output, "-f", args.i, "-o", args.o + "/gene_prediction_output/", "-p", "-gl"])
 
 elif args.p==True:
-	subprocess.call(["./gene_prediction_pipeline.py", "-i", args.i, "-t", args.t, "-o", args.o, "-p"])
-	subprocess.call(["./merge.py", "-i", gff_output, "-f", args.i, "-o", args.o + "/gene_prediction_output/", "-p"])
+	subprocess.call([prediction_script, "-i", args.i, "-t", args.t, "-o", args.o, "-p"])
+	subprocess.call([merge_script, "-i", gff_output, "-f", args.i, "-o", args.o, "-p"])
 
 elif args.gl==True:
-	subprocess.call(["./gene_prediction_pipeline.py", "-i", args.i, "-t", args.t, "-o", args.o, "-gl"])
-	subprocess.call(["./merge.py", "-i", gff_output, "-f", args.i, "-o", args.o + "/gene_prediction_output/", "-gl"])
+	subprocess.call([prediction_script, "-i", args.i, "-t", args.t, "-o", args.o, "-gl"])
+	subprocess.call([merge_script, "-i", gff_output, "-f", args.i, "-o", args.o + "/gene_prediction_output/", "-gl"])
 
 elif args.gm==True:
-	subprocess.call(["./gene_prediction_pipeline.py", "-i", args.i, "-t", args.t, "-o", args.o, "-gm"])
-	subprocess.call(["./merge.py", "-i", gff_output, "-f", args.i, "-o", args.o + "/gene_prediction_output/", "-gm"])
+	subprocess.call([prediction_script, "-i", args.i, "-t", args.t, "-o", args.o, "-gm"])
+	subprocess.call([merge_script, "-i", gff_output, "-f", args.i, "-o", args.o + "/gene_prediction_output/", "-gm"])
 
-gff_output= args.o + "/gene_prediction_output/gff_output/"
-
+subprocess.call(["rm", "-r", args.o + "/gene_prediction_output/"])
 
