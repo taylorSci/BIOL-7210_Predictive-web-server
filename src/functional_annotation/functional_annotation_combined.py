@@ -2,14 +2,16 @@
 # -*- encoding: utf-8 -*-
 
 ###----------------------USAGE-------------------
-#python functional_annotation_combined.py -I <gene prediction fasta file directory> -i <clustering identity (0.95 default)> -u <usearch executable path>  -E <eggnog database directory> -D <deeparg database directory> -n <genome assembly paired contigs fasta file directory> -O <output directory>
+#python functional_annotation_combined.py -I <Input Directory> -i <clustering identity (0.95 default)> -u <usearch executable path>  -E <eggnog database directory> -D <deeparg database directory> -n <genome assembly paired contigs fasta file directory> -O <output directory> -p 
 
+##change I to input directory
 
 ##---------------IMPORTING PACKAGES---------------
 import os
 import subprocess
 import optparse
 import shutil
+import zipfile
 
 ##---------------OPTIONS------------------
 def opts():
@@ -21,9 +23,9 @@ def opts():
     parser.add_option('-E', '--eggnog_database', help = 'eggnog database path', dest = 'E')
     parser.add_option('-D', '--deeparg_database', help = 'deeparg database path', dest = 'D')
     parser.add_option('-n', '--paired_contigs_directory', help = 'paired contigs directory path', dest = 'n')
+    parser.add_option('-p', '--run_pilercr', action='store_false', dest= 'p')
     parser.add_option('-O', '--output_directory', help = 'output directory path', dest = 'O')
     return(parser.parse_args())
-
 
 ##--------------USEARCH-------------------
 
@@ -79,7 +81,7 @@ def perform_eggnogmapper(centroids_file, data_directory, output_base, output_dir
             annotate_list.append([query_name, score, name, attributes])
     ### assign to seqid of centroid
     gfffile = output_directory + '/eggnog_output.gff'
-    fh1 = open(output_directory + gfffile, 'w+')
+    fh1 = open(gfffile, 'w+')
     fh1.write("##gff-version file" + "\n")
     fh1.write("seqid" + '\t' + "source" +"\t" +"type"+"\t"+"start"+"\t"+"end"+"\t"+"score"+"\t"+"strand"+"\t"+"phase"+"\t"+"attributes"+"\n")
     for i in range(len(annotate_list)):
@@ -96,34 +98,35 @@ def perform_eggnogmapper(centroids_file, data_directory, output_base, output_dir
 ##usage: perform_deepARG(output_path + '/deeparg/deeparg')
 def perform_deepARG(output_directory):
 ## format output to gff
-    outputfilepath = output_directory + '.align.daa.tsv'
-    annotate_list = []
-    with open(outputfilepath, 'r') as fh:
-        for line in fh.readlines()[4:-3]:
-            line = line.strip()
-            line = line.split("\t")
-            query_name = line[0]
-            ##this is the ortholog score
-            ##if we want to include the e-value then we need line[2]
-            score = line[10]
-            ## antibiotic resistance gene info
-            antibiotic_info = line[1]
-            annotate_list.append([query_name, score, antibiotic_info])
-    ### assign to seqid of centroid
-    gfffile = output_directory + '_deeparg.gff'
-    fh1 = open(gfffile, 'w+')
-    fh1.write("##gff-version file" + "\n")
-    fh1.write("seqid" + '\t' + "source" +"\t" +"type"+"\t"+"start"+"\t"+"end"+"\t"+"score"+"\t"+"strand"+"\t"+"phase"+"\t"+"attributes"+"\n")
-    for i in range(len(annotate_list)):
-        x = annotate_list[i]
-        query_name = x[0]
-        ran = query_name.split('_')[0]
-        ran = ran[:-2]
-        ran = ran.split('-')
-        start = ran[0]
-        stop = ran[1]
-        l = query_name + "\t" + "DeepARG" + "\t" + "." + "\t" + start +"\t"+ stop +"\t"+ str(x[1]) +"\t"+"."+"\t"+"."+"\t"+ str(x[2])
-        fh1.write(l + '\n')
+	outputfilepath = output_directory + '.align.daa.tsv'
+	annotate_list = []
+	with open(outputfilepath, 'r') as fh:
+		for line in fh.readlines()[4:-3]:
+			line = line.strip()
+			line = line.split("\t")
+			query_name = line[0]
+            		##this is the ortholog score
+            		##if we want to include the e-value then we need line[2]
+			score = line[10]
+            		## antibiotic resistance gene info
+			antibiotic_info = line[1]
+			annotate_list.append([query_name, score, antibiotic_info])
+    	### assign to seqid of centroid
+	gfffile = output_directory + '_output.gff'
+	fh1 = open(gfffile, 'w+')
+	fh1.write("##gff-version file" + "\n")
+	fh1.write("seqid" + '\t' + "source" +"\t" +"type"+"\t"+"start"+"\t"+"end"+"\t"+"score"+"\t"+"strand"+"\t"+"phase"+"\t"+"attributes"+"\n")
+	for i in range(len(annotate_list)):
+		x = annotate_list[i]
+		query_name = x[0]
+		ran=query_name.rsplit('-', 1)
+		#ran = query_name.split('_')[0]
+		#ran = ran[:-2]
+		#ran = ran.split('-')
+		start = (ran[0]).rsplit('_')[-1]
+		stop = (ran[1]).rsplit('_')[0]
+		l = query_name + "\t" + "DeepARG" + "\t" + "." + "\t" + start +"\t"+ stop +"\t"+ str(x[1]) +"\t"+"."+"\t"+"."+"\t"+ str(x[2])
+		fh1.write(l + '\n')
         
 ##-----PILER-CR----------------
 #usage: perform_pilercr(contigs_directory, output_path + '/pilercr')
@@ -131,10 +134,9 @@ def perform_pilercr(inputdirectory, outputdirectory):
     for i in os.listdir(inputdirectory):
         command = ['pilercr', '-in', inputdirectory +'/'+i,'-out', outputdirectory + '/pilercr/' + i[:-6]+'_pilercr_out.txt','-noinfo']
         subprocess.run(command)
-    
     gff_file = open(outputdirectory + '/pilercr_combined.gff', 'w')
     gff_file.write('##gff-version3\n')
-    
+    gff_file.close()
     for filename in os.listdir(outputdirectory + '/pilercr'):
         pilercrout = open(outputdirectory + "/pilercr/" + filename)
         pilercr=[]
@@ -165,8 +167,7 @@ def perform_pilercr(inputdirectory, outputdirectory):
                 start= int(pilercr[i][2])
                 end = start + int(pilercr[int(i)][3])
                 strand = pilercr[i][7]
-
-            with open(gff_file, 'a') as f:
+            with open(outputdirectory + '/pilercr_combined.gff', 'a') as f:
                 f.write(seqid + "\t" + source + "\t" + typ + "\t" + str(start) + "\t" + str(end) + "\t" + score + "\t" + strand + "\t" + phase + "\t" + attributes + "\n")
             f.close()
         
@@ -215,7 +216,7 @@ def create_gff_dict(cluster_dict, combined_gff):
 ##usage: write_gff_files(seq_list, gff_dict, outpath+ '/merged_gff')
 def write_gff_files(sequence_list, gff_mapped, output):
     for seq in sequence_list:
-        gff_file = open(output + '/' + seq + '.gff', 'w+')
+        gff_file = open(output + '/' + seq + '_fa.gff', 'w+')
         gff_file.write('##gff-version 3\n')
         for query in gff_mapped.keys():
             query_seq = query.split('__')[0]
@@ -230,8 +231,8 @@ def add_pilecr(sequence_list, output, pilecr_gff):
     pilecr_file = pilecr_file.readlines()
     for line in pilecr_file[1:]:
         line = line.strip()
-        annotation = 'P' + line.split('P', 1)[1]
-        seq_name = line.split('P')[0]
+        annotation = 'P' + line.rsplit('Paired', 1)[1]
+        seq_name = (line.rsplit('Paired')[0]).rsplit("_")[0] 
         for gff_name in gff_list:
             if seq_name in gff_name:
                 file = open(output + '/' + gff_name, 'a')
@@ -303,13 +304,33 @@ def annotate_faa_files(gff_directory, gff_list, faa_directory, fna_directory, ou
 def main():
 	options, args = opts()
 	input_path = options.I
-	input_files = os.listdir(input_path)
+	for file in os.scandir(options.I):
+        	if file.path.endswith(".zip"):
+                	dest= (file.name).strip(".zip")
+                	with zipfile.ZipFile(file, "r") as zip_ref:
+                        	zip_ref.extractall(options.I)
+                	for subfile in os.scandir(options.I + "/" + dest):
+                        	shutil.copy2(subfile, options.I)
+                	subprocess.call(["rm", "-r", options.I + "/" + (file.name).strip(".zip")])
+			#subprocess.call(["rm", "-r", file])
+
+	input_files =os.listdir(input_path)
 	clust_id = options.i
 	usearch_path = options.u
 	output_path = options.O
 	eggnog_database = options.E
 	deeparg_database = options.D
-	contigs_directory = options.n
+	#contigs_directory = options.n
+	run_pilercr= options.p
+	if not os.path.exists(output_path + "/assembled_reads"):
+                os.makedirs(output_path + "/assembled_reads")
+	for file in os.scandir(input_path):
+		if file.path.endswith(".fasta"):
+			subprocess.call(["mv", file, output_path + "/assembled_reads/"])
+		#if file.path.endswith(".faa"):
+		#	input_files.append(file)
+		
+	contigs_directory = output_path + "/assembled_reads/"	
 
 	##create temp directories
 	if not os.path.exists(output_path):
@@ -325,46 +346,59 @@ def main():
 	if not os.path.exists(output_path + '/merged_gff'):
 		os.makedirs(output_path + '/merged_gff')
 
-	input_list=[]
-	for file in os.scandir(options.I):
-		if file.path.endswith(".faa"):
-			input_list.append(file.path)
-	for file in input_list: 
-		basename=os.path.basename(file)
-		basename=basename.replace("_gp.faa", "")
-		basename=basename.replace(".faa", "")
+	#input_list=[]
+	#for file in os.scandir(options.I):
+	#	if file.path.endswith(".faa"):
+	#		input_list.append(file.path)
+	#for file in input_list: 
+	#	basename=os.path.basename(file)
+	#	basename=basename.replace("_gp.faa", "")
+	#	basename=basename.replace(".faa", "")
 	### run pipeline
-    #print('Clustering protein sequences...')
-    #perform_usearch(input_path, input_files, clust_id, usearch_path, output_path)
-    #print('Performing eggnog mapper...')
-    #perform_eggnogmapper(output_path + '/clustering/centroids.fa', eggnog_database, 'eggnog', output_path + '/eggnog', '3')
+	print('Clustering protein sequences...')
+	#perform_usearch(input_path, input_files, clust_id, usearch_path, output_path)
+	if eggnog_database is not None: 
+		print('Performing eggnog mapper...')
+		perform_eggnogmapper(input_path + '/clustering/centroids.fa', eggnog_database, 'eggnog', output_path + '/eggnog', '3')
+	if deeparg_database is not None:
 		print('Changing to deeparg conda environment...')
-		deeparg_command = 'deeparg predict -i ' + file + ' --model SS -o ' + output_path + '/deeparg/' + basename + ' -d ' + deeparg_database + ' --type prot --min-prob 0.8'
+		deeparg_command = 'deeparg predict -i ' + input_path + '/clustering/centroids.fa' + ' --model SS -o ' + output_path + '/deeparg/deeparg -d ' + deeparg_database + ' --type prot --min-prob 0.8'
 		deeparg_bash = 'bash -c "source /projects/team-1/devops/anaconda3/etc/profile.d/conda.sh; conda activate functional_annotation_deeparg; '+ deeparg_command + '"'
 		print('Changing to python 2.7 environment and performing deeparg')
 		conda_change = subprocess.call(deeparg_bash, shell = True) ##activate python 2.7 environment
-		perform_deepARG(output_path + '/deeparg/' + basename)
-		shutil.copy(output_path + '/deeparg/' + basename + "_deeparg.gff", output_path + basename + "_deeparg.gff")
-		subprocess.call(["rm", "-r", output_path + '/deeparg/'])
-		#print('Performing pilercr...')
-    #perform_pilercr(contigs_directory, output_path)
-    #print('Backtracking and merging gff files...')
-    #combined = open(output_path + '/combined_outputs.gcc', 'w')
-    #combined.write('##gff-version3\n')
-    #combined.close()
-    #subprocess.run(['tail -n+3', output_path + '/eggnog/eggnog_output.gff', '>>', output_path + '/combined_outputs.gff'])
-    #subprocess.run(['tail -n+3', output_path + '/deeparg/deeparg_output.gff', '>>', output_path + '/combined_outputs.gff'])
-    #clust_dict = centroid_matching(output_path + '/clustering/seq_labels.uc')
-    #gff_dict = create_gff_dict(clust_dict, output_path + '/combined_outputs.gff')
-    #seq_list = []
-    #for f in input_files:
-    #    if '.faa' in f:
-    #        seq_list.append(f[:-4])
-    #write_gff_files(seq_list, gff_dict, output_path + '/merged_gff')
-    #add_pilecr(seq_list, output_path + '/merged_gff', output_path + '/pilercr_combined.gff')
-    #print('Annotating fasta files...')
-    #gff_list = os.listdir(output_path + '/merged_gff')
-    #annotate_faa_files(output_path + '/merged_gff', gff_list, input_path, contigs_directory, output_path + '/annotated_fasta')
+		perform_deepARG(output_path + '/deeparg/deeparg')
+	if options.p==True:
+		print('Performing pilercr...')
+		perform_pilercr(contigs_directory, output_path)
+	print('Backtracking and merging gff files...')
+	combined = open(output_path + '/combined_outputs.gcc', 'w')
+	combined.write('##gff-version3\n')
+	combined.close()
+	if eggnog_database is not None:
+		os.system('tail -n+3 ' + output_path + '/eggnog/eggnog_output.gff >> ' + output_path + '/combined_outputs.gff')
+	if deeparg_database is not None:
+		os.system('tail -n+3 ' + output_path + '/deeparg/deeparg_output.gff >> ' + output_path + '/combined_outputs.gff')
+	clust_dict = centroid_matching(output_path + '/clustering/seq_labels.uc')
+	gff_dict = create_gff_dict(clust_dict, output_path + '/combined_outputs.gff')
+	seq_list = []
+	for f in input_files:
+		if '.faa' in f:
+			seq_list.append(f[:-4])
+	write_gff_files(seq_list, gff_dict, output_path + '/merged_gff')
+	if run_pilercr==True:
+		add_pilecr(seq_list, output_path + '/merged_gff', output_path + '/pilercr_combined.gff')
+        #print('Annotating fasta files...')
+        #gff_list = os.listdir(output_path + '/merged_gff')
+        #annotate_faa_files(output_path + '/merged_gff', gff_list, input_path, contigs_directory, output_path + '/annotated_fasta')
+	#remove subdirectories
+	for file in os.scandir(input_path + "/merged_gff/"):
+		shutil.move(file.path, input_path)
+		
+	subprocess.call(["rm", "-r", output_path + '/clustering/'])
+	#subprocess.call(["rm", "-r", output_path + '/eggnog/'])
+	subprocess.call(["rm", "-r", output_path + '/pilercr/'])
+	subprocess.call(["rmdir", output_path + '/merged_gff/'])
+	subprocess.call(["rm", "-r", output_path + '/deeparg/'])
 	print('----Pipeline Complete----')
     
 
