@@ -311,8 +311,14 @@ def options(request, **kwargs):
 
 def submitted(request, **kwargs):
     context = deepcopy(CONTEXT)
+    context['job_id'] = kwargs['job_id']
     context['userEmail'] = Job.objects.get(id=kwargs['job_id']).user.email
     return render(request, 'foodbornePathogen/submitted.html', context)
+
+
+def info(request, **kwargs):
+    context = deepcopy(CONTEXT)
+    return render(request, 'foodbornePathogen/info.html', context)
 
 
 def results(request, **kwargs):  # TODO Construct results page

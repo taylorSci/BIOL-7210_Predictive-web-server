@@ -10,6 +10,8 @@
     {% block content %}
     <main>
         <p>Your job has been submitted. You will receive an email at {{ userEmail }} with a download link when it is complete.</p>
+        <p>If you do not receive an email, your data should eventually be visible at:</p>
+        <p>https://team1.predict2021.biosci.gatech.edu/fbp/{{ job_id }}</p>
     </main>
     {% endblock %}
 </body>
