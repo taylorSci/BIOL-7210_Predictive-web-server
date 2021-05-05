@@ -13,18 +13,13 @@
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {% load static %}
-<<<<<<< HEAD
-                <table border= "1">
-                {{ user }}
-                {{ upload }}
-                </table>
-=======
+            
             <table border= "1">
             {{ user }}
             {{ upload }}
             </table>
->>>>>>> 9ed005639089fe3925aae4d8013907bcb1232475
             {% for stage in stages %}
+            <hr width="67%">
                 {# <img src="{% static 'foodbornePathogen/img/{{ stage.name }}_schematic.png' %}" alt="stage schematic"> #}
                 <img src="{% static 'foodbornePathogen/img/test_im.png' %}" alt="stage schematic">
                 <table border= "1">
