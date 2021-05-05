@@ -326,7 +326,7 @@ def main():
                 os.makedirs(output_path + "/assembled_reads")
 	for file in os.scandir(input_path):
 		if file.path.endswith(".fasta"):
-			subprocess.call(["mv", file, output_path + "/assembled_reads/"])
+			subprocess.call(["cp", file, output_path + "/assembled_reads/"])
 		#if file.path.endswith(".faa"):
 		#	input_files.append(file)
 		
@@ -356,7 +356,7 @@ def main():
 	#	basename=basename.replace(".faa", "")
 	### run pipeline
 	print('Clustering protein sequences...')
-	#perform_usearch(input_path, input_files, clust_id, usearch_path, output_path)
+	perform_usearch(input_path, input_files, clust_id, usearch_path, output_path)
 	if eggnog_database is not None: 
 		print('Performing eggnog mapper...')
 		perform_eggnogmapper(input_path + '/clustering/centroids.fa', eggnog_database, 'eggnog', output_path + '/eggnog', '3')
@@ -395,7 +395,7 @@ def main():
 		shutil.move(file.path, input_path)
 		
 	subprocess.call(["rm", "-r", output_path + '/clustering/'])
-	#subprocess.call(["rm", "-r", output_path + '/eggnog/'])
+	subprocess.call(["rm", "-r", output_path + '/eggnog/'])
 	subprocess.call(["rm", "-r", output_path + '/pilercr/'])
 	subprocess.call(["rmdir", output_path + '/merged_gff/'])
 	subprocess.call(["rm", "-r", output_path + '/deeparg/'])
