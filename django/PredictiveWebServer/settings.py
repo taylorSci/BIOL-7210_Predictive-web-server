@@ -24,7 +24,7 @@ SECRET_KEY = '!&ytf56gzl&fu9!06pex8nbrma%dq!pgq+&u&3p20rz82ml1!y'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [ '130.207.66.246', 'team1.predict2021.biosci.gatech.edu' ]
+ALLOWED_HOSTS = [ '127.0.0.1', '130.207.66.246', 'team1.predict2021.biosci.gatech.edu' ]
 
 # Application definition
 
@@ -116,11 +116,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
+BASE_URL = "https://team1.predict2021.biosci.gatech.edu/"
+
 STATIC_URL = '/static/'
+
+#STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 MEDIA_URL = '/media/'
 
-#MEDIA_ROOT = '/home/taylor/Desktop/class/BIOL7210/Team1-PredictiveWebServer/media/'  # TODO change for server deployment
-MEDIA_ROOT = '/projects/team-1/data/'
-#STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+# MEDIA_ROOT = '/home/taylor/Desktop/class/BIOL7210/Team1-PredictiveWebServer/media/'  # Uncomment for local deployment
+MEDIA_ROOT = '/projects/team-1/data/'  # TODO Uncomment for server deployment
 
