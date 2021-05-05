@@ -4,15 +4,42 @@ tools/
 sandbox/
 devops/
 gunicorn/
+data/
+
+# CA
+CompGen/
+assembly_subset/
+input/
+subset_gff/
+
+# ----------------------------------------
 
 devops/archive
 devops/anaconda3
 devops/backup
 
+# ----------------------------------------
+
 migrations
 __pycache__
 log
 db.sqlite3
+Campylobacter_*
+CJ_35.txt
+CJ_profile.txt
+CJ_weight.txt
+GMS2.mod
+
+# CA
+7gMLST.tsv
+7gMLST_sub.tsv
+camplo_ref.fna
+virulencefactorplot.py
+test_4.emapper.annotations
+
+# ----------------------------------------
+
 *.swp
 *.log
+*.yml
 *~
