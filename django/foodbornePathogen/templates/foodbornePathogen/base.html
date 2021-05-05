@@ -1,38 +1,100 @@
-<!DOCTYPE html>
+<!doctype html>
+{% load static %}
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <base href="http://127.0.0.1:8000/fbp/">  {# SWITCH FROM LOCAL TO SERVER DOMAIN NAME #}
-        {# <base href="{{ BASE_URL }}/fbp/"> #}
-    </head>
-    <body>
-        <header>
-            <h1>Foodborne Pathogen Predictive Web Server</h1>
-            <nav>
-                <a href="">Home</a>
-                <span>
-                    <button class="dropdown-button">Pipeline</button>
-                    <div class="dropdown-content">
-                        {% for pipeRange in range_choices %}
-                        <a href="options/{{ pipeRange.0 }}">{{ pipeRange.1 }}</a>
-                        {% endfor %}
-                    </div>
-                </span>
-                <a href="terms">Terms</a>
-                <a href="https://github.gatech.edu/comgenomics2021/Team1-WebServer" target="_blank">Git</a>
-                <a href="https://compgenomics2021.biosci.gatech.edu/Team_I_Webserver" target="_blank">Wiki</a>
-            </nav>
-        </header>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
+	<base href="/fbp/">
+        <!--base href="https://team1.predict2021.biosci.gatech.edu/fbp/"--->
+	<title>Campylobacter Jejuni Predictive Webserver</title>
+<!--
+Raleway Template 
+http://www.templatemo.com/preview/templatemo_421_raleway
+-->
+	<link rel="stylesheet" href="../../static/foodbornePathogen/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../../static/foodbornePathogen/css/font-awesome.min.css">
+	<link rel="stylesheet" href="../../static/foodbornePathogen/css/simple-line-icons.css">
+	<link rel="stylesheet" href="../../static/foodbornePathogen/css/animate.css">
+	<link rel="stylesheet" href="../../static/foodbornePathogen/css/templatemo_style.css">
+	
+	<script src="../../static/foodbornePathogen/js/jquery.min.js"></script>
+	<script src="../../static/foodbornePathogen/js/templatemo_custom.js"></script>
+</head>
+<body>
+	<header class="site-header container animated fadeInDown">
+		<div class="header-wrapper">
+			<div class="row">
+				<div class="col-md-8">
+					<div class="site-branding">
+						<a href="#"><h1>Foodborne Pathogen Webserver</h1></a>
+					</div>
+				</div>
+				<a href="#" class="toggle-nav hidden-md hidden-lg">
+					<i class="fa fa-bars"></i>
+				</a>
+				<div class="col-md-4">
+					<nav id="nav" class="main-navigation hidden-xs hidden-sm">
+						<ul class="main-menu">
+							<li><a class= "active homebutton" onclick="document.location='/fbp'" style="cursor:pointer;">Home</a></li>
+							<li><a class="active aboutbutton" onclick="document.location='/fbp/info'" style="cursor:pointer;">Info</a></li>
+						      	<li><div class="dropdown">
+						      	<button onclick="myFunction()" class="dropbtn">Run Pipeline</button>
+							<div id="myDropdown" class="dropdown-content">
+                						{% for pipeRange in range_choices %}
+                						<a href="options/{{ pipeRange.0 }}">{{ pipeRange.1 }}</a>
+                						{% endfor %}
+							</div>
+							</div></li>
+  							
+						</ul>
+					</nav>
+					<nav class="main-navigation menu-responsive hidden-md hidden-lg">
+						<ul class="main-menu">
+							<li><a class="active homebutton" onclick="document.location='/fbp'" style="cursor:pointer;">Home</a></li>
+							<li><a class="active aboutbutton" onclick="document.location='/fbp/info'" style="cursor:pointer;">Info</a></li>
+							<li><div class="dropdown">
+						      	<button onclick="myFunction()" class="dropbtn">Run Pipeline</button>
+							<div id="myDropdown" class="dropdown-content">
+								{% for pipeRange in range_choices %}
+                						<a href="options/{{ pipeRange.0 }}">{{ pipeRange.1 }}</a>
+                						{% endfor %}
+							</div>
+							</div></li>
+							
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</header>
+	
+	{% block content %}
+	{% endblock %}
+	
+	<footer class="site-footer container text-center">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="main-footer">
+					<ul class="social">
+						<li><a href="https://github.gatech.edu/comgenomics2021/Team1-WebServer">GitHub</a></li>
+						<li><a href="https://compgenomics2021.biosci.gatech.edu/Team_I_Webserver">Wiki</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12 copyright">
+				<p>This web server is supported by the Georgia Institute of Technology. &copy; 2021</a></p>
+			</div>
+		</div>
+	</footer>
+	<!-- templatemo 421 raleway -->
+	<span class="border-top"></span>
+	<span class="border-left"></span>
+	<span class="border-right"></span>
+	<span class="border-bottom"></span>
+	<span class="shape-1"></span>
+	<span class="shape-2"></span>
 
-        {% block content %}
-        <main></main>
-        {% endblock %}
-
-        <footer>
-            <p>
-                This web server is supported by the Georgia Institute of Technology.
-            </p>
-        </footer>
-    </body>
+</body>
 </html>

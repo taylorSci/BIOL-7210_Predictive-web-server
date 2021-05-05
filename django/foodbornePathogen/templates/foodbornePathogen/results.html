@@ -4,12 +4,66 @@
 <head>
     <meta charset="UTF-8">
     <title>Results Download</title>
+    
 </head>
 <body>
-    {% block content %}
+{% block content %}
     <main>
+        <div class="projects-header">
+				<h2 class="animated fadeInRight">Results</h2>
+			</div>
+			<div class="projects-holder">
+				<div class="row">
+						<h2 class="h4">Genome Assembly Output</h2>
+						<div>
+						<a href="" download="w3logo"> Genome Assembly Output Files (.zip)
+						</a>
+						</div>
+						<a href="index.html" target="_blank">MultiQC results</a>
+						<h2 class="h4">Gene Prediction Output</h2>
+						<a href="" download="w3logo"> Gene Prediction Output Files(.zip)
+						</a>
+						<h2 class="h4">Functional Annotation Output</h2>
+						<a href="" download="w3logo"> Functional Annotation Output Files(.zip)
+						</a>
+						<h2 class="h4">Comparative Genomics Output</h2>
+						<div>
+						<a href="" download="w3logo"> Comparative Genomics Output Files(.zip)
+						</a>
+						</div>
+						<h2 class="h6">ANI heatmap:</h2>
+						<div class="img">
+								<img src="img/aniheatmap.jpg" alt="", style="width:350px;height:350px;">
+						</div>
+						<h2 class="h6">MLST:</h2>
+						<div class="img/1">
+							<div class="project-item">
+								<img src="img/mlst.jpg" alt="">
+							</div>
+						</div>
+				</div>
+				<div class="row">
+					<h2 class="h6">SNP Tree:</h2>
+					<div class="img/1">
+						<div class="project-item">
+							<img src="img/snptree.jpg" alt="">
+						</div>
+					</div>
+				</div>
 
+				<div class="row">
+					<h2 class="h6">Virulence factors heatmap:</h2>
+					<div class="img/1">
+						<div class="project-item">
+							<img src="img/sample2.png" alt="">
+						</div>
+					</div>
+				</div>
+				
+				
+			</div>
+		</div>
     </main>
-    {% endblock %}
+{% endblock %}
 </body>
 </html>

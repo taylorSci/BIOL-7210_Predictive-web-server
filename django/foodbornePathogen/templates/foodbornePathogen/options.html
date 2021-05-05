@@ -4,26 +4,57 @@
 <head>
     <meta charset="UTF-8">
     <title>Pipeline parameters</title>
+    
+	
 </head>
 <body>
-    {% block content %}
+{% block content %}
     <main>
+    <div class="welcome-title text-center"><h2>File Submission</h2></div><br></br>
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {% load static %}
-
+             <style>
+      table {
+        border-collapse: separate;
+        border-spacing: 5px 15px;
+        margin-left: 350px; 
+      }
+      th {
+        background-color: #3d9fdb;
+        color: white;
+      }
+      th,
+      td {
+        width: 150px;
+        text-align: center;
+        border: 1px;
+        padding: 4px;
+      }
+      h2 {
+        color: #3d9fdb;
+      }
+    </style>
+            <table border= "3">
             {{ user }}
             {{ upload }}
-
+            </table>
             {% for stage in stages %}
+            <hr width="61%">
+            <div class="text-center"><h2>{{ stage.name}} Options</h2></div>
                 {# <img src="{% static 'foodbornePathogen/img/{{ stage.name }}_schematic.png' %}" alt="stage schematic"> #}
-                <img src="{% static 'test_im.png' %}" alt="stage schematic">
-                {{ stage.form }}
-                <br>
+                {#<img src="{% static 'foodbornePathogen/img/test_im.png' %}" alt="stage schematic" style="margin-left:350px;"> #}
+                <br></br>
+                <table border= "3">
+                    {{ stage.form }}
+                </table>
+                
             {% endfor %}
-            <input type="submit" value="Submit Job">
+            <br></br>
+            <div style="text-align: center;"><input type="submit" value="Submit Job"></div>
+            <br></br>
         </form>
     </main>
-    {% endblock %}
+{% endblock %}
 </body>
 </html>
