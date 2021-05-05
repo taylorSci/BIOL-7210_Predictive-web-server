@@ -10,6 +10,7 @@
 <body>
 {% block content %}
     <main>
+    <div class="welcome-title text-center"><h2>File Submission</h2></div><br></br>
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {% load static %}
@@ -40,15 +41,18 @@
             </table>
             {% for stage in stages %}
             <hr width="61%">
+            <div class="text-center"><h2>{{ stage.name}} Options</h2></div>
                 {# <img src="{% static 'foodbornePathogen/img/{{ stage.name }}_schematic.png' %}" alt="stage schematic"> #}
-                <img src="{% static 'foodbornePathogen/img/test_im.png' %}" alt="stage schematic" style="margin-left:350px;">
+                {#<img src="{% static 'foodbornePathogen/img/test_im.png' %}" alt="stage schematic" style="margin-left:350px;"> #}
                 <br></br>
                 <table border= "3">
                     {{ stage.form }}
                 </table>
                 
             {% endfor %}
-            <input type="submit" value="Submit Job">
+            <br></br>
+            <div style="text-align: center;"><input type="submit" value="Submit Job"></div>
+            <br></br>
         </form>
     </main>
 {% endblock %}
