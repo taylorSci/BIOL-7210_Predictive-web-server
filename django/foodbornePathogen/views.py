@@ -72,7 +72,8 @@ def run_job(clientEmail, job, params):
     logger.debug('job.pipeRange = ' + str(job.pipeRange))
 
     # Determine job characteristics
-    first, last = RANGES[job.pipeRange]
+    pr = job.pipeRange
+    first, last = RANGES[pr]
     runFlags = [False]*4
     for stage in range(first, last+1):
         runFlags[stage] = True
@@ -118,25 +119,24 @@ def run_job(clientEmail, job, params):
 
         # Select sample set
         os.mkdir(f'{MEDIA_ROOT}{clientEmail}/sample/')
-        filePrefix = '' if first == 1 else f'{job.id}_'
         for isolate in isolates:
-            os.link(f'{MEDIA_ROOT}{clientEmail}/{filePrefix}{isolate}.fasta', f'{MEDIA_ROOT}{clientEmail}/sample/{filePrefix}{isolate}.fasta')
-            sp.run(['zip', f'{MEDIA_ROOT}{clientEmail}/sample/{filePrefix}{isolate}.zip', f'{MEDIA_ROOT}{clientEmail}/sample/{filePrefix}{isolate}.fasta'])
+            os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta')
+            sp.run(['zip', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta'])
 
         # Call stage script
         args = get_client_args(params, GPStage)
-        args = args + ['-i', f'{MEDIA_ROOT}{clientEmail}/sample/',
-                       '-o', f'{MEDIA_ROOT}{clientEmail}/sample/',
-                       '-t', '4']
+        args = ['-i', f'{MEDIA_ROOT}{clientEmail}/sample/',
+                '-o', f'{MEDIA_ROOT}{clientEmail}/sample/',
+                '-t', '4'] + args
         cmd = f'{SCRIPTS_ROOT}/gene_prediction/src/fake_gene_prediction_master.py {" ".join(args)}'  # Uncomment for testing
         # cmd = f'{SCRIPTS_ROOT}/gene_prediction/src/gene_prediction_master.py {" ".join(args)}'  # TODO Uncomment for app deployment
         run_bash_command_in_different_env(cmd, 'gene_prediction')
 
         # Clean up junk files
         for isolate in isolates:
-            os.link(f'{MEDIA_ROOT}{clientEmail}/sample/{filePrefix}{isolate}_gp.faa', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}_gp.faa')
-            os.link(f'{MEDIA_ROOT}{clientEmail}/sample/{filePrefix}{isolate}_gp.fna', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}_gp.fna')
-            os.link(f'{MEDIA_ROOT}{clientEmail}/sample/{filePrefix}{isolate}_gp.gff', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}_gp.gff')
+            os.link(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}_gp.faa', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}_gp.faa')
+            os.link(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}_gp.fna', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}_gp.fna')
+            os.link(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}_gp.gff', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}_gp.gff')
         sp.run(['rm', '-r', f'{MEDIA_ROOT}{clientEmail}/sample'])
 
         # Database changes
@@ -150,20 +150,19 @@ def run_job(clientEmail, job, params):
 
         # Select sample set
         os.mkdir(f'{MEDIA_ROOT}{clientEmail}/sample/')
-        filePrefix = '' if first == 2 else f'{job.id}_'
         for isolate in isolates:
-            os.link(f'{MEDIA_ROOT}{clientEmail}/{filePrefix}{isolate}.fasta', f'{MEDIA_ROOT}{clientEmail}/sample/{filePrefix}{isolate}.fasta')
-            os.link(f'{MEDIA_ROOT}{clientEmail}/{filePrefix}{isolate}_gp.faa', f'{MEDIA_ROOT}{clientEmail}/sample/{filePrefix}{isolate}_gp.faa')
-            sp.run(['zip', f'{MEDIA_ROOT}{clientEmail}/sample/{filePrefix}{isolate}.zip',
-                    f'{MEDIA_ROOT}{clientEmail}/sample/{filePrefix}{isolate}.fasta',
-                    f'{MEDIA_ROOT}{clientEmail}/sample/{filePrefix}{isolate}_gp.faa'])
+            os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta')
+            os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FAA"] else str(job.id) + "_"}{isolate}{"" if RANGE_INPUTS[pr]["FAA"] else "_gp"}.faa', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.faa')
+            os.chdir(f'{MEDIA_ROOT}{clientEmail}/sample/')  # Prevent saving directory structure into zip
+            sp.run(['zip', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip',
+                    f'{isolate}.fasta', f'{isolate}.faa'])
 
         # Call stage script
         args = get_client_args(params, FAStage)
-        args = args + ['-I', f'{MEDIA_ROOT}{clientEmail}/sample/',
-                       '-O', f'{MEDIA_ROOT}{clientEmail}/sample/',
-                       '-u', '/projects/team-1/tools/functional_annotation/usearch11.0.667_i86linux32',
-                       '-D', '/projects/team-1/tools/functional_annotation/deeparg_database']
+        args = ['-I', f'{MEDIA_ROOT}{clientEmail}/sample/',
+                '-O', f'{MEDIA_ROOT}{clientEmail}/sample/',
+                '-u', '/projects/team-1/tools/functional_annotation/usearch11.0.667_i86linux32',
+                '-D', '/projects/team-1/tools/functional_annotation/deeparg_database'] + args
         cmd = f'{SCRIPTS_ROOT}/functional_annotation/fake_functional_annotation_combined.py {" ".join(args)}'  # Uncomment for testing
         # cmd = f'{SCRIPTS_ROOT}/functional_annotation/functional_annotation_combined.py {" ".join(args)}'  # TODO Uncomment for app deployment
         cenv = 'functional_annotation_deeparg' if '-D' in args else 'functional_annotation'
@@ -171,7 +170,7 @@ def run_job(clientEmail, job, params):
 
         # Clean up junk files
         for isolate in isolates:
-            os.link(f'{MEDIA_ROOT}{clientEmail}/sample/{filePrefix}{isolate}_gp_fa.gff', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}_fa.gff')
+            os.link(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}_fa.gff', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}_fa.gff')
         sp.run(['rm', '-r', f'{MEDIA_ROOT}{clientEmail}/sample'])
 
         for isolate in isolates:
@@ -184,31 +183,41 @@ def run_job(clientEmail, job, params):
 
         # Select sample set
         os.mkdir(f'{MEDIA_ROOT}{clientEmail}/sample/')
-        filePrefix = '' if first == 3 else f'{job.id}_'
         for isolate in isolates:
-            os.link(f'{MEDIA_ROOT}{clientEmail}/{filePrefix}{isolate}.fasta', f'{MEDIA_ROOT}{clientEmail}/sample/{filePrefix}{isolate}.fasta')
-            os.link(f'{MEDIA_ROOT}{clientEmail}/{filePrefix}{isolate}_fa.gff', f'{MEDIA_ROOT}{clientEmail}/sample/{filePrefix}{isolate}_fa.gff')
-            os.link(f'{MEDIA_ROOT}{clientEmail}/{filePrefix}{isolate}.zip', f'{MEDIA_ROOT}{clientEmail}/sample/{filePrefix}{isolate}.zip')
-            sp.run(['zip', f'{MEDIA_ROOT}{clientEmail}/sample/{filePrefix}{isolate}.zip',
-                    f'{MEDIA_ROOT}{clientEmail}/sample/{filePrefix}{isolate}.fasta',
-                    f'{MEDIA_ROOT}{clientEmail}/sample/{filePrefix}{isolate}_fa.gff'])
+            inputs = []
+            if params['run_ANIm'] or params['run_parSNP'] or params['get_virulence_factors']:
+                inputs.append(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta')
+                os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta')
+            if params['get_resistance_factors']:
+                inputs.append(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.gff')
+                os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["GFF"] else str(job.id) + "_"}{isolate}{"" if RANGE_INPUTS[pr]["GFF"] else "_fa"}.gff', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.gff')
+            if params['run_stringMLST']:
+                inputs.append(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip')
+                os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FQ"] else str(job.id) + "_"}{isolate}.zip', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip')
+            sp.run(['zip', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}_.zip'] + inputs)
+            os.rename(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}_.zip', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip')
 
         # Call stage script
         args = get_client_args(params, CGStage)
         args = args + ['-a', f'{MEDIA_ROOT}{clientEmail}/sample/',
                        '-O', f'{MEDIA_ROOT}{clientEmail}/sample/',
-                       '-o', job.id,
+                       '-o', str(job.id),
                        '-r', '/projects/team-1/src/comparative_genomics/Team1-ComparativeGenomics/camplo_ref.fna']
-        cmd = f'{SCRIPTS_ROOT}/comparative_genomics/Team1-ComparativeGenomics/Comparative_master_pipeline.sh {" ".join(args)}'  # Uncomment for testing
+        cmd = f'{SCRIPTS_ROOT}/comparative_genomics/Team1-ComparativeGenomics/fake_Comparative_master_pipeline.sh {" ".join(args)}'  # Uncomment for testing
         # cmd = f'{SCRIPTS_ROOT}/comparative_genomics/Team1-ComparativeGenomics/Comparative_master_pipeline.sh {" ".join(args)}'  # TODO Uncomment for app deployment
         run_bash_command_in_different_env(cmd, 'comparative_genomics')
 
         # Clean up junk files
-        os.link(f'{MEDIA_ROOT}{clientEmail}/sample/ANIm_percentage_identity.png', f'{MEDIA_ROOT}{clientEmail}/ANIm_percentage_identity_{job.id}.png')
-        os.link(f'{MEDIA_ROOT}{clientEmail}/sample/MLSTtree_{job.id}.pdf', f'{MEDIA_ROOT}{clientEmail}/MLSTtree_{job.id}.pdf')
-        os.link(f'{MEDIA_ROOT}{clientEmail}/sample/SNP_{job.id}.pdf', f'{MEDIA_ROOT}{clientEmail}/SNP_{job.id}.pdf')
-        os.link(f'{MEDIA_ROOT}{clientEmail}/sample/res_table_{job.id}.png', f'{MEDIA_ROOT}{clientEmail}/res_table_{job.id}.png')
-        os.link(f'{MEDIA_ROOT}{clientEmail}/sample/VF_table_{job.id}.png', f'{MEDIA_ROOT}{clientEmail}/VF_table_{job.id}.png')
+        if params['run_ANIm']:
+            os.link(f'{MEDIA_ROOT}{clientEmail}/sample/ANIm_percentage_identity.png', f'{MEDIA_ROOT}{clientEmail}/ANIm_percentage_identity_{job.id}.png')
+        if params['run_stringMLST']:
+            os.link(f'{MEDIA_ROOT}{clientEmail}/sample/MLSTtree_{job.id}.pdf', f'{MEDIA_ROOT}{clientEmail}/MLSTtree_{job.id}.pdf')
+        if params['run_parSNP']:
+            os.link(f'{MEDIA_ROOT}{clientEmail}/sample/SNP_{job.id}.pdf', f'{MEDIA_ROOT}{clientEmail}/SNP_{job.id}.pdf')
+        if params['get_resistance_factors']:
+            os.link(f'{MEDIA_ROOT}{clientEmail}/sample/res_table_{job.id}.png', f'{MEDIA_ROOT}{clientEmail}/res_table_{job.id}.png')
+        if params['get_virulence_factors']:
+            os.link(f'{MEDIA_ROOT}{clientEmail}/sample/VF_table_{job.id}.png', f'{MEDIA_ROOT}{clientEmail}/VF_table_{job.id}.png')
         sp.run(['rm', '-r', f'{MEDIA_ROOT}{clientEmail}/sample'])
 
         logger.info("Comparative Genomics Pipeline Done...")
@@ -217,7 +226,7 @@ def run_job(clientEmail, job, params):
         isolate.save()
 
     # Contact user  TODO Figure out how to send email; Alternative is just to print out the link on results.
-    send_mail("Foodborn Pathogen job completed", MESSAGE.format(BASE_URL, job.id), from_email=None, recipient_list=[clientEmail])
+    # send_mail("Foodborn Pathogen job completed", MESSAGE.format(BASE_URL, job.id), from_email=None, recipient_list=[clientEmail])
 
 
 def index(request):
@@ -269,18 +278,27 @@ def options(request, **kwargs):
         for file in request.FILES.getlist('upload'):
             isolate = Isolate(user=user, upload=file)
             isolate.save()
-            sp.run(['mv', f'{MEDIA_ROOT}/{isolate.upload}', f'{MEDIA_ROOT}/{userEmail}/{isolate.upload}.zip'])  # Extension & user folder are removed in file saving, so must be restored
+            os.makedirs(f'{MEDIA_ROOT}{userEmail}/', exist_ok=True)
+            os.rename(f'{MEDIA_ROOT}{isolate.upload}', f'{MEDIA_ROOT}{userEmail}/{isolate.upload}.zip')  # Extension & user folder are removed in file saving, so must be restored
             if first:  # If requested job does not start with genome assembly (i.e. uploaded files are not reads), unzip uploads
-                sp.run(['unzip', f'{MEDIA_ROOT}/{isolate.upload}.zip'])  # Assume client has given same filenames to contents as outer TODO Eliminate assumption
+                os.rename(f'{MEDIA_ROOT}{userEmail}/{isolate.upload}.zip', f'{MEDIA_ROOT}{userEmail}/{isolate.upload}_.zip')
+                sp.run(['unzip', '-d', f'{MEDIA_ROOT}{userEmail}/', f'{MEDIA_ROOT}{userEmail}/{isolate.upload}_.zip'])  # Assume client has given same filenames to contents as outer TODO Eliminate assumption
+                os.remove(f'{MEDIA_ROOT}{userEmail}/{isolate.upload}_.zip')
             sample = Sample(isolate=isolate, job=job)
             sample.save()
 
         # Make stages
-        params = {}
         for i in range(first, last+1):
+            params = {}
             for attr in STAGELIST[i]._meta.get_fields(include_parents=False):
-                if attr.name in request.POST:
-                    params[attr.name] = request.POST[attr.name]
+                if isinstance(attr, models.BooleanField):
+                    if attr.name in request.POST:
+                        params[attr.name] = True
+                    else:
+                        params[attr.name] = False
+                else:
+                    if attr.name in request.POST:
+                        params[attr.name] = request.POST[attr.name]
             stage = STAGELIST[i](job=job, **params)
             stage.save()
 

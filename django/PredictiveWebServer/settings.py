@@ -124,6 +124,6 @@ STATIC_URL = '/static/'
 
 MEDIA_URL = '/media/'
 
-MEDIA_ROOT = '/home/taylor/Desktop/class/BIOL7210/Team1-PredictiveWebServer/media/'  # Uncomment for local deployment
-# MEDIA_ROOT = '/projects/team-1/data/'  # TODO Uncomment for server deployment
+# MEDIA_ROOT = '/home/taylor/Desktop/class/BIOL7210/Team1-PredictiveWebServer/media/'  # Uncomment for local deployment
+MEDIA_ROOT = '/projects/team-1/data/'  # TODO Uncomment for server deployment
 

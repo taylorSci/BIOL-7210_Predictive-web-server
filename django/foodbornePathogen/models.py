@@ -36,6 +36,16 @@ RANGE_CHOICES = ['Full Pipeline',
                  'GP - FA',
                  'GP - CG',
                  'FA - CG']
+RANGE_INPUTS = [{'FQ': 1, 'FASTA': 0, 'FAA': 0, 'GFF': 0},
+                {'FQ': 1, 'FASTA': 0, 'FAA': 0, 'GFF': 0},
+                {'FQ': 0, 'FASTA': 1, 'FAA': 0, 'GFF': 0},
+                {'FQ': 0, 'FASTA': 1, 'FAA': 1, 'GFF': 0},
+                {'FQ': 1, 'FASTA': 1, 'FAA': 0, 'GFF': 1},
+                {'FQ': 1, 'FASTA': 0, 'FAA': 0, 'GFF': 0},
+                {'FQ': 1, 'FASTA': 0, 'FAA': 0, 'GFF': 0},
+                {'FQ': 0, 'FASTA': 1, 'FAA': 0, 'GFF': 0},
+                {'FQ': 1, 'FASTA': 1, 'FAA': 0, 'GFF': 0},
+                {'FQ': 1, 'FASTA': 1, 'FAA': 1, 'GFF': 0}]
 
 PARAMETER_ABBREVS = {'cut_mean_quality': 'M',
                      'average_qual': 'e',
@@ -123,7 +133,7 @@ class GPStage(Stage):
 class FAStage(Stage):
     clustering_identity = models.FloatField(default=0.95, validators=[min0valid, min1valid])
     # run_EggNOG = models.BooleanField(default=False)  # At least 1 of EggNOG, DeepARG, & PilerCR must run
-    # run_DeepARG = models.BooleanField(default=True)
+    # run_DeepARG = models.BooleanField(default=True)  # Hard-wired in for the sake of stage modularity
     run_PilerCR = models.BooleanField(default=False)
 
 
