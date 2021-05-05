@@ -13,16 +13,36 @@
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {% load static %}
-            
+             <style>
+      table {
+        border-collapse: separate;
+        border-spacing: 0 15px;
+        margin-left: 350px; 
+      }
+      th {
+        background-color: #3d9fdb;
+        color: white;
+      }
+      th,
+      td {
+        width: 150px;
+        text-align: center;
+        border: 1px;
+        padding: 4px;
+      }
+      h2 {
+        color: #3d9fdb;
+      }
+    </style>
             <table border= "1">
             {{ user }}
             {{ upload }}
             </table>
             {% for stage in stages %}
-            <hr width="67%">
+            <hr width="61%">
                 {# <img src="{% static 'foodbornePathogen/img/{{ stage.name }}_schematic.png' %}" alt="stage schematic"> #}
                 <img src="{% static 'foodbornePathogen/img/test_im.png' %}" alt="stage schematic">
-                <table border= "1">
+                <table border= "10">
                     {{ stage.form }}
                 </table>
                 <br>
