@@ -418,7 +418,7 @@ if $resistance; then
 	if [ $(find ${all_input} -name *_fa.gff) ]; then
 		echo "file found"
 	else
-		echo "No DeepARG faa file provided. Please run functional annotation first"
+		echo "No DeepARG gff file provided. Please run functional annotation first"
 	fi
 	for file in $(ls ${all_input}/output/Deeparg/*.gff); do
 		echo $file
@@ -491,5 +491,6 @@ if $PlasmidFinder; then
 	mv tmp $PWD/CompGen/tools/PlasmidFinder
 fi
 rm -r ${all_input}/assembled_reads/
+rm -r ${all_input}/raw_reads/
 rm -r ${all_input}/deeparg/
 rm -r ${all_input}/output/
