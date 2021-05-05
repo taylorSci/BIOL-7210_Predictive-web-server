@@ -16,7 +16,7 @@
              <style>
       table {
         border-collapse: separate;
-        border-spacing: 0 15px;
+        border-spacing: 5px 15px;
         margin-left: 350px; 
       }
       th {
@@ -34,18 +34,19 @@
         color: #3d9fdb;
       }
     </style>
-            <table border= "1">
+            <table border= "3">
             {{ user }}
             {{ upload }}
             </table>
             {% for stage in stages %}
             <hr width="61%">
                 {# <img src="{% static 'foodbornePathogen/img/{{ stage.name }}_schematic.png' %}" alt="stage schematic"> #}
-                <img src="{% static 'foodbornePathogen/img/test_im.png' %}" alt="stage schematic">
-                <table border= "10">
+                <img src="{% static 'foodbornePathogen/img/test_im.png' %}" alt="stage schematic" style="margin-left:350px;">
+                <br></br>
+                <table border= "3">
                     {{ stage.form }}
                 </table>
-                <br>
+                
             {% endfor %}
             <input type="submit" value="Submit Job">
         </form>
