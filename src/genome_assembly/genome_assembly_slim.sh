@@ -98,5 +98,5 @@ do
 done
 
 # Remove temp folder
-# rm -r $outputDir
+rm -r $outputDir
 
