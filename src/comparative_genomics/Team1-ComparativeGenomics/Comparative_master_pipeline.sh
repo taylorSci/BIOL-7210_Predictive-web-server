@@ -82,11 +82,14 @@ do
 	esac
 done
 
+echo "output path is $output"
 
 ## UNZIPPING INPUT FILE ###
 isolates=$(ls ${all_input}/*.zip | xargs -I % basename % .zip)
+echo "******input directory is $isolates" 
 for i in $isolates
 do
+	echo "*********unzipping $i in $isolates" 
 	unzip $all_input/$i.zip -d $output_path
         mv $all_input/$i/* $output_path/
 	rmdir $all_input/$i/
@@ -223,13 +226,13 @@ if $stringMLST; then
 	fi
 	
 	# run stringMLST
-	echo "downloading database for $species from pubMLST..."
+	echo "********downloading database for $species from pubMLST..."
 	stringMLST.py --getMLST -P /projects/team-1/src/comparative_genomics/CompGen/tools/stringMLST/datasets/ --species "Campylobacter jejuni"
 	
-	echo "configuring database for $species..."
+	echo "********configuring database for $species..."
 	stringMLST.py --buildDB --config /projects/team-1/src/comparative_genomics/CompGen/tools/stringMLST/datasets/Campylobacter_jejuni_config.txt -k 35 -P CJ
 	
-	echo "running sequence typing for paired end reads..."
+	echo "********running sequence typing for paired end reads..."
 	stringMLST.py --predict -d ${all_input}/raw_reads/ -p --prefix CJ -k 35 > ${output_path}/7gMLST_profile_temp.txt
 	
 	cat ${output_path}/7gMLST_profile_temp.txt /projects/team-1/src/comparative_genomics/Team1-ComparativeGenomics/7gMLST_sub.tsv > ${output_path}/7gMLST_${output}.tsv
@@ -245,7 +248,7 @@ if $stringMLST; then
 	echo "Done with stringMLST!"
 
 	# run GrapeTree to generate newick file for cluster visualization
-	echo "generating Newick file from allele profile"
+	echo "*******generating Newick file from allele profile"
 	grapetree -p ${output_path}/7gMLST_${output}.tsv -m "MSTreeV2" > ${output_path}/7gMLST_${output}.newick
 	
 	echo "Newick file generated"
@@ -381,7 +384,8 @@ if $virulence; then
 	for line in $(cat ${output_path}/virulence/VF_unique_$output.txt); do
         	long_line+="	$line"
 	done
-
+	
+	echo "****** These are the headers for the virulence table: $long_line" 
 	echo "$long_line" > ${output_path}/VF_table_$output.txt
 	
 	# check if gene is in each file and add info to VF_table.txt
@@ -395,6 +399,7 @@ if $virulence; then
                         	data+="	"
                 	fi
         	done
+		echo "***** This are the virulence data lines for each input: $data" 
         	echo "$data" >> ${output_path}/VF_table_$output.txt
 	done
 python /projects/team-1/src/comparative_genomics/Team1-ComparativeGenomics/virulencefactorplot.py -i ${output_path}/VF_table_$output.txt -o ${output_path}/VF_table_$output
@@ -438,6 +443,7 @@ if $resistance; then
 		long_line+="	$line"
 	done
 
+	echo "****** These are the headers for 
 	echo "$long_line" > ${output_path}/res_table_$output.txt
 
 	# check if gene is in each file and add info to res_table.txt
@@ -450,6 +456,7 @@ if $resistance; then
 				data+="	"
 			fi
 		done
+		echo "******* This is resistance data line: $data" 
 		echo "$data" >> ${output_path}/res_table_$output.txt
 	done
 

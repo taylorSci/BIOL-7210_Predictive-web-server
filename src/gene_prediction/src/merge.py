@@ -18,6 +18,7 @@ parser.add_argument("-gl", action="store_true", help="run glimmer")
 
 args = parser.parse_args()
 
+print("Making gene_prediction_output/sorted_gene_prediction/ folder")
 if not os.path.exists(args.o + "/gene_prediction_output/sorted_gene_prediction/"):
 	os.mkdir(args.o + "/gene_prediction_output/sorted_gene_prediction/")
 
@@ -35,6 +36,7 @@ if not os.path.exists(args.o + "/gene_prediction_output/sorted_gene_prediction/"
 
 input_list=[]
 
+print("making list with gff files")
 for file in os.scandir(args.i):
 	if file.path.endswith(".gff"):
 		input_list.append(file.path)
@@ -42,11 +44,12 @@ for file in os.scandir(args.i):
 x = os.listdir(args.i)
 
 samples = []
- 
+
 for each in x:
 	samples.append(each) 
 
 def sort(sorted_file):
+	print("sorting gff files")
 	basename=os.path.basename(sorted_file)
 	basename=basename.replace("_genemark.gff", "")
 	basename=basename.replace("_prodigal.gff", "")
@@ -62,6 +65,7 @@ def sort(sorted_file):
 
 
 def merge(gff_file):
+	print("running merge")
 	basename=os.path.basename(gff_file)
 	basename=basename.replace("_glimmer_sorted.gff","")
 	basename=basename.replace("_genemark_sorted.gff","")
@@ -98,9 +102,10 @@ def merge(gff_file):
 #glimmer only
 	elif args.gl==True:
 		shutil.copy(input_name + basename + "_glimmer_sorted.gff", output_name + basename + "_gp.gff")
+print("generating fasta")
 #generate fasta
 	os.system("bedtools getfasta -fi " + args.f + "/" + basename + ".fasta -bed " + output_name + basename + "_gp.gff -fo "+ output_name + basename + "_gp.fna")
-
+print("generating faa")
 #generate faa file
 	os.system("transeq -sequence "+ output_name + basename + "_gp.fna -outseq "+ output_name + basename + "_gp.faa")
 

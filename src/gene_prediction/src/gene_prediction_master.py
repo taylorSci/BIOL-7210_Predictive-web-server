@@ -21,31 +21,45 @@ prediction_script="/projects/team-1/src/gene_prediction/src/gene_prediction_pipe
 merge_script="/projects/team-1/src/gene_prediction/src/merge.py"
 
 if args.gm==True and args.p==True and args.gl==True:
+	print("Running gene prediction script")
 	subprocess.call([prediction_script, "-i", args.i, "-t", args.t, "-o", args.o, "-gm", "-p", "-gl"])
+	print("Running merge script")
 	subprocess.call([merge_script, "-i", gff_output, "-f", args.i, "-o", args.o, "-gm", "-p", "-gl"])
 
 elif args.p==True and args.gm==True:
+	print("Running gene prediction script")
 	subprocess.call([prediction_script, "-i", args.i, "-t", args.t, "-o", args.o, "-gm", "-p"])
+	print("Running merge script")
 	subprocess.call([merge_script, "-i", gff_output, "-f", args.i, "-o", args.o + "/gene_prediction_output/", "-gm", "-p"])
 
 elif args.gl==True and args.gm==True:
+	print("Running gene prediction script")
 	subprocess.call([prediction_script, "-i", args.i, "-t", args.t, "-o", args.o, "-gm", "-gl"])
+	print("Running merge script")
 	subprocess.call([merge_script, "-i", gff_output, "-f", args.i, "-o", args.o + "/gene_prediction_output/", "-gm", "-gl"])
 
 elif args.gl==True and args.p==True:
+	print("Running gene prediction script")
 	subprocess.call([prediction_script, "-i", args.i, "-t", args.t, "-o", args.o, "-p", "-gl"])
+	print("Running merge script")
 	subprocess.call([merge_script, "-i", gff_output, "-f", args.i, "-o", args.o + "/gene_prediction_output/", "-p", "-gl"])
 
 elif args.p==True:
+	print("Running gene prediction script")
 	subprocess.call([prediction_script, "-i", args.i, "-t", args.t, "-o", args.o, "-p"])
+	print("Running merge script")
 	subprocess.call([merge_script, "-i", gff_output, "-f", args.i, "-o", args.o, "-p"])
 
 elif args.gl==True:
+	print("Running gene prediction script")
 	subprocess.call([prediction_script, "-i", args.i, "-t", args.t, "-o", args.o, "-gl"])
+	print("Running merge script")
 	subprocess.call([merge_script, "-i", gff_output, "-f", args.i, "-o", args.o + "/gene_prediction_output/", "-gl"])
 
 elif args.gm==True:
+	print("Running gene prediction script")
 	subprocess.call([prediction_script, "-i", args.i, "-t", args.t, "-o", args.o, "-gm"])
+	print("Running merge script")
 	subprocess.call([merge_script, "-i", gff_output, "-f", args.i, "-o", args.o + "/gene_prediction_output/", "-gm"])
 
 subprocess.call(["rm", "-r", args.o + "/gene_prediction_output/"])
