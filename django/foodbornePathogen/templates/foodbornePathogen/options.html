@@ -11,6 +11,7 @@
 {% block content %}
     <main>
     <div class="welcome-title text-center"><h2>File Submission</h2></div><br></br>
+    <div class="text-center"><img src="{% static 'foodbornePathogen/img/FileTypes.jpg' %}" alt="input files"></div><br></br>
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {% load static %}
