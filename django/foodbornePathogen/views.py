@@ -150,7 +150,8 @@ def run_job(clientEmail, job, params):
             logger.info(f'Link GP inputs to sample folder*************************{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta')
             os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta')
             logger.info(f'Zip file inputs:**************************{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta --> {MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip')
-            sp.run(['zip', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta'])
+            os.chdir(f'{MEDIA_ROOT}{clientEmail}/sample/')
+            sp.run(['zip', f'{isolate}.zip', f'{isolate}.fasta'])
 
         # Call stage script
         args = get_client_args(params, GPStage)

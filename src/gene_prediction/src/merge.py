@@ -102,10 +102,10 @@ def merge(gff_file):
 #glimmer only
 	elif args.gl==True:
 		shutil.copy(input_name + basename + "_glimmer_sorted.gff", output_name + basename + "_gp.gff")
-print("generating fasta")
+	print("generating fasta")
 #generate fasta
 	os.system("bedtools getfasta -fi " + args.f + "/" + basename + ".fasta -bed " + output_name + basename + "_gp.gff -fo "+ output_name + basename + "_gp.fna")
-print("generating faa")
+	print("generating faa")
 #generate faa file
 	os.system("transeq -sequence "+ output_name + basename + "_gp.fna -outseq "+ output_name + basename + "_gp.faa")
 
