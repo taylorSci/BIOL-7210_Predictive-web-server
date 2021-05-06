@@ -20,6 +20,14 @@ gff_output= args.o + "/gene_prediction_output/gff_output/"
 prediction_script="/projects/team-1/src/gene_prediction/src/gene_prediction_pipeline.py"
 merge_script="/projects/team-1/src/gene_prediction/src/merge.py"
 
+print("***********Input file")
+print(args.i)
+print("************Output file")
+print(args.o)
+print(f'type of args.p: {type(args.p)}')
+print(args)
+
+
 if args.gm==True and args.p==True and args.gl==True:
 	print("Running gene prediction script")
 	subprocess.call([prediction_script, "-i", args.i, "-t", args.t, "-o", args.o, "-gm", "-p", "-gl"])
@@ -45,10 +53,16 @@ elif args.gl==True and args.p==True:
 	subprocess.call([merge_script, "-i", gff_output, "-f", args.i, "-o", args.o + "/gene_prediction_output/", "-p", "-gl"])
 
 elif args.p==True:
-	print("Running gene prediction script")
-	subprocess.call([prediction_script, "-i", args.i, "-t", args.t, "-o", args.o, "-p"])
-	print("Running merge script")
-	subprocess.call([merge_script, "-i", gff_output, "-f", args.i, "-o", args.o, "-p"])
+        subprocess.call(["touch", args.i + "/CALL_file.txt"])
+        subprocess.run(["touch", args.i + "/RUN_file.txt"])
+        print(f"************* touch {args.i}/RUN_file.txt")
+
+        print("*****************Running gene prediction script")
+        print(prediction_script)
+        subprocess.call([prediction_script, "-i", args.i, "-t", args.t, "-o", args.o, "-p"])
+        print("********************Running merge script")
+        print(merge_script)
+        subprocess.call([merge_script, "-i", gff_output, "-f", args.i, "-o", args.o, "-p"])
 
 elif args.gl==True:
 	print("Running gene prediction script")
@@ -58,9 +72,10 @@ elif args.gl==True:
 
 elif args.gm==True:
 	print("Running gene prediction script")
+	print(prediction_script)
 	subprocess.call([prediction_script, "-i", args.i, "-t", args.t, "-o", args.o, "-gm"])
 	print("Running merge script")
 	subprocess.call([merge_script, "-i", gff_output, "-f", args.i, "-o", args.o + "/gene_prediction_output/", "-gm"])
 
-subprocess.call(["rm", "-r", args.o + "/gene_prediction_output/"])
+#subprocess.call(["rm", "-r", args.o + "/gene_prediction_output/"])
 

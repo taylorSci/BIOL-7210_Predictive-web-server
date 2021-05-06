@@ -22,7 +22,7 @@ SECRET_KEY = '!&ytf56gzl&fu9!06pex8nbrma%dq!pgq+&u&3p20rz82ml1!y'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [ '127.0.0.1', '130.207.66.246', 'team1.predict2021.biosci.gatech.edu', 'localhost' ]
+ALLOWED_HOSTS = [ '127.0.0.1', '130.207.66.246', 'team1.predict2021.biosci.gatech.edu', 'team1.bioappredict2021.biosci.gatech.edu', 'localhost' ]
 
 # Application definition
 
