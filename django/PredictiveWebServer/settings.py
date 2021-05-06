@@ -117,6 +117,7 @@ BASE_URL = "https://team1.predict2021.biosci.gatech.edu/"
 
 STATIC_URL = '/static/'
 
+STATIC_ROOT = '../../../html/'
 #STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 MEDIA_URL = '/media/'
