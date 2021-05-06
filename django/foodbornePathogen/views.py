@@ -98,15 +98,21 @@ def run_job(clientEmail, job, params):
         # Call stage script
         args = get_client_args(params, GAStage)
         args.append(f'{MEDIA_ROOT}{clientEmail}/sample/')
+        # sp.run(['/home/taylor/Desktop/class/BIOL7210/Team1-PredictiveWebServer/fake_genome_assembly_slim.sh'] + args)
         cmd = f'{SCRIPTS_ROOT}/genome_assembly/fake_genome_assembly_slim.sh {" ".join(args)}'  # Uncomment for testing
         # cmd = f'{SCRIPTS_ROOT}/genome_assembly/genome_assembly_slim.sh {" ".join(args)}'  # TODO Uncomment for app deployment
         run_bash_command_in_different_env(cmd, 'genome_assembly')
 
         # Clean up junk files
+        outputs = []
         for isolate in isolates:
             os.link(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}.fasta')
             os.link(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.html', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}.html')
+            outputs.append(f'{job.id}_{isolate}.fasta')
+            outputs.append(f'{job.id}_{isolate}.html')
         sp.run(['rm', '-r', f'{MEDIA_ROOT}{clientEmail}/sample'])
+        os.chdir(f'{MEDIA_ROOT}{clientEmail}')
+        sp.run(['zip', f'{MEDIA_ROOT}{clientEmail}/GA_{job.id}.zip'] + outputs)
 
         # Database changes
         for isolate in isolates:
@@ -128,16 +134,23 @@ def run_job(clientEmail, job, params):
         args = ['-i', f'{MEDIA_ROOT}{clientEmail}/sample/',
                 '-o', f'{MEDIA_ROOT}{clientEmail}/sample/',
                 '-t', '4'] + args
+        # sp.run(['/home/taylor/Desktop/class/BIOL7210/Team1-PredictiveWebServer/fake_gene_prediction_master.py'] + args)
         cmd = f'{SCRIPTS_ROOT}/gene_prediction/src/fake_gene_prediction_master.py {" ".join(args)}'  # Uncomment for testing
         # cmd = f'{SCRIPTS_ROOT}/gene_prediction/src/gene_prediction_master.py {" ".join(args)}'  # TODO Uncomment for app deployment
         run_bash_command_in_different_env(cmd, 'gene_prediction')
 
         # Clean up junk files
+        outputs = []
         for isolate in isolates:
             os.link(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}_gp.faa', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}_gp.faa')
             os.link(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}_gp.fna', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}_gp.fna')
             os.link(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}_gp.gff', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}_gp.gff')
+            outputs.append(f'{job.id}_{isolate}_gp.faa')
+            outputs.append(f'{job.id}_{isolate}_gp.fna')
+            outputs.append(f'{job.id}_{isolate}_gp.gff')
         sp.run(['rm', '-r', f'{MEDIA_ROOT}{clientEmail}/sample'])
+        os.chdir(f'{MEDIA_ROOT}{clientEmail}')
+        sp.run(['zip', f'{MEDIA_ROOT}{clientEmail}/GP_{job.id}'] + outputs)
 
         # Database changes
         for isolate in isolates:
@@ -155,7 +168,8 @@ def run_job(clientEmail, job, params):
             os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FAA"] else str(job.id) + "_"}{isolate}{"" if RANGE_INPUTS[pr]["FAA"] else "_gp"}.faa', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.faa')
             os.chdir(f'{MEDIA_ROOT}{clientEmail}/sample/')  # Prevent saving directory structure into zip
             sp.run(['zip', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip',
-                    f'{isolate}.fasta', f'{isolate}.faa'])
+                    f'{isolate}.fasta',
+                    f'{isolate}.faa'])
 
         # Call stage script
         args = get_client_args(params, FAStage)
@@ -163,15 +177,20 @@ def run_job(clientEmail, job, params):
                 '-O', f'{MEDIA_ROOT}{clientEmail}/sample/',
                 '-u', '/projects/team-1/tools/functional_annotation/usearch11.0.667_i86linux32',
                 '-D', '/projects/team-1/tools/functional_annotation/deeparg_database'] + args
+        # sp.run(['/home/taylor/Desktop/class/BIOL7210/Team1-PredictiveWebServer/fake_functional_annotation_combined.py'] + args)
         cmd = f'{SCRIPTS_ROOT}/functional_annotation/fake_functional_annotation_combined.py {" ".join(args)}'  # Uncomment for testing
         # cmd = f'{SCRIPTS_ROOT}/functional_annotation/functional_annotation_combined.py {" ".join(args)}'  # TODO Uncomment for app deployment
         cenv = 'functional_annotation_deeparg' if '-D' in args else 'functional_annotation'
         run_bash_command_in_different_env(cmd, cenv)
 
         # Clean up junk files
+        outputs = []
         for isolate in isolates:
             os.link(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}_fa.gff', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}_fa.gff')
+            outputs.append(f'{job.id}_{isolate}_fa.gff')
         sp.run(['rm', '-r', f'{MEDIA_ROOT}{clientEmail}/sample'])
+        os.chdir(f'{MEDIA_ROOT}{clientEmail}')
+        sp.run(['zip', f'{MEDIA_ROOT}{clientEmail}/FA_{job.id}'] + outputs)
 
         for isolate in isolates:
             isolate.annotationsAvailable = True
@@ -183,16 +202,17 @@ def run_job(clientEmail, job, params):
 
         # Select sample set
         os.mkdir(f'{MEDIA_ROOT}{clientEmail}/sample/')
+        os.chdir(f'{MEDIA_ROOT}{clientEmail}/sample/')
         for isolate in isolates:
             inputs = []
             if params['run_ANIm'] or params['run_parSNP'] or params['get_virulence_factors']:
-                inputs.append(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta')
+                inputs.append(f'{isolate}.fasta')
                 os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta')
             if params['get_resistance_factors']:
-                inputs.append(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.gff')
+                inputs.append(f'{isolate}.gff')
                 os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["GFF"] else str(job.id) + "_"}{isolate}{"" if RANGE_INPUTS[pr]["GFF"] else "_fa"}.gff', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.gff')
             if params['run_stringMLST']:
-                inputs.append(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip')
+                inputs.append(f'{isolate}.zip')
                 os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FQ"] else str(job.id) + "_"}{isolate}.zip', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip')
             sp.run(['zip', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}_.zip'] + inputs)
             os.rename(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}_.zip', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip')
@@ -203,6 +223,7 @@ def run_job(clientEmail, job, params):
                        '-O', f'{MEDIA_ROOT}{clientEmail}/sample/',
                        '-o', str(job.id),
                        '-r', '/projects/team-1/src/comparative_genomics/Team1-ComparativeGenomics/camplo_ref.fna']
+        # sp.run(['/home/taylor/Desktop/class/BIOL7210/Team1-PredictiveWebServer/fake_Comparative_master_pipeline.sh'] + args)
         cmd = f'{SCRIPTS_ROOT}/comparative_genomics/Team1-ComparativeGenomics/fake_Comparative_master_pipeline.sh {" ".join(args)}'  # Uncomment for testing
         # cmd = f'{SCRIPTS_ROOT}/comparative_genomics/Team1-ComparativeGenomics/Comparative_master_pipeline.sh {" ".join(args)}'  # TODO Uncomment for app deployment
         run_bash_command_in_different_env(cmd, 'comparative_genomics')

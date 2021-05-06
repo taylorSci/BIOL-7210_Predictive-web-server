@@ -16,11 +16,13 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
 
 from . import views
 
 urlpatterns = [
     path('fbp/', include('foodbornePathogen.urls')),
     path('admin/', admin.site.urls),
+    path(f'{settings.MEDIA_ROOT[1:]}<str:userEmail>/<str:fileName>', views.download),
     path('', views.redirect),
 ]
