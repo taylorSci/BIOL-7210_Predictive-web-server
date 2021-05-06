@@ -43,53 +43,60 @@ done
 
 # Parse positional arguments
 inputDir=$(realpath ${@:$OPTIND:1})
+echo "***********inputDirs: $inputDir"
 
 # Make temporary output directory from which to pull output files
 outputDir=$inputDir/temp
+echo "***********outputDir: $outputDir"
 mkdir -p $outputDir
-
-#putting raw reads in one folder for MLST
-#mkdir -p $inputDir/raw_reads
-
-
 
 isolates=$(ls $inputDir/*.zip | xargs -I % basename % .zip)
 
 fastpDir=$outputDir/read_QC/fastp
 SPAdesDir=$outputDir/assemblies/SPAdes
 SPAdesContigs=$SPAdesDir/contigs/\${PATTERN}_SPAdes.fasta
+echo "***********fastpDir: $fastpDir"
+echo "***********SPAdesDir: $SPAdesDir"
+
 
 # Unpacking zipped sequencing read content
 for i in $isolates
 do
-	unzip $inputDir/$i.zip -d $outputDir
-	#cp $inputDir/temp/$i/* $inputDir/raw_reads/
+        echo "*******Unzipping isolate: $i"
+	mkdir -p $outputDir/$i
+	unzip $inputDir/$i.zip -d $outputDir/$i
 done
 
 # Preprocess reads
 echo "Analyzing and trimming reads..."
 mkdir -p $fastpDir
-echo "Assembling with SPAdes..."
-mkdir -p $SPAdesDir/extra
 for i in $isolates
 do
 	mkdir -p $fastpDir/$i
 	cd $fastpDir/$i
 	read1=$(basename $(ls $outputDir/$i | head -n1) .fq.gz)
 	read2=$(basename $(ls $outputDir/$i | tail -n1) .fq.gz)
-	fastp -i $outputDir/$i/$read1.fq.gz -I $outputDir/$i/$read2.fq.gz -o  $fastpDir/$i/${read1}_fp.fq.gz -O  $fastpDir/$i/${read2}_fp.fq.gz -f 5 -t 5 -5 -3 -M $cut_mean_quality -W $cut_window_size -e $average_qual -c
+        echo "********* Trimming read1: $read1"
+        echo "********* Trimming read2: $read2"
+	fastp -i $outputDir/$i/$read1.fq.gz -I $outputDir/$i/$read2.fq.gz -o $fastpDir/$i/${read1}_fp.fq.gz -O $fastpDir/$i/${read2}_fp.fq.gz -f 5 -t 5 -5 -3 -M $cut_mean_quality -W $cut_window_size -e $average_qual -c
+done
 
-#echo "Assembling with SPAdes..."
-#mkdir -p $SPAdesDir/extra
+echo "Assembling with SPAdes..."
+mkdir -p $SPAdesDir/extra
 
+for i in $isolates;
+do 
 	# Run SPAdes
-	spades.py -1 $fastpDir/$i/${read1}_fp.fq.gz -2 $fastpDir/$i/${read2}_fp.fq.gz -o $SPAdesDir/extra/$i -t 4
+        echo "********* Assembling isolate: $i"
+	spades.py -1 $fastpDir/$i/${i}_1_fp.fq.gz -2 $fastpDir/$i/${i}_2_fp.fq.gz -o $SPAdesDir/extra/$i -t 4
 	
 	# Hardlink output files from temp folder into input directory
 	ln $SPAdesDir/extra/$i/contigs.fasta $inputDir/$i.fasta
+        echo "************Hardlink: $SPAdesDir/extra/$i/contigs.fasta --> $inputDir/$i.fasta"
 	ln $fastpDir/$i/fastp.html $inputDir/$i.html
+	echo "************Hardlink: $fastpDir/$i/fastp.html --> $inputDir/$i.html"
 done
 
 # Remove temp folder
-rm -r $outputDir
+# rm -r $outputDir
 

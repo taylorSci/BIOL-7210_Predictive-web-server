@@ -18,13 +18,13 @@ done
 shift $((OPTIND-1))
 
 # ------------ Unzip All Zips  ------------
-in_zips=($(find "${in_dir}". -name "*.zip"))
-for ii in "${in_files[@]}"; do
+in_zips=($(find "${in_dir}" -name "*.zip"))
+for ii in "${in_zips[@]}"; do
     unzip -j "${ii}" -d "${in_dir}"
 done
 
 # ------------ Get Input Files ------------
-in_files=($(find "${in_dir}". -name "*.fasta"))
+in_files=($(find "${in_dir}" -name "*.fasta"))
 basenames=()
 for ii in "${in_files[@]}"; do
     in_basenames+=($(basename ${ii} ".fasta"))

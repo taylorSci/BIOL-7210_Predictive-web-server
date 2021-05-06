@@ -26,9 +26,10 @@ done
 
 # ------------ Generate Fake Output Files ------------
 
-for ii in "${in_basenames[@]}"; do
+for ii in "${in_zips[@]}"; do
   echo "Generating output files for input file: ${ii}"
-  echo "This is a fake file for testing purposes." > ${out_dir}/${ii}.fasta
-  echo "This is a fake file for testing purposes." > ${out_dir}/${ii}.html
+  basename=$(basename $ii .zip)
+  echo "This is a fake file for testing purposes." > ${out_dir}/${basename}.fasta
+  echo "This is a fake file for testing purposes." > ${out_dir}/${basename}.html
 done
 

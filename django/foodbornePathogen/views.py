@@ -13,6 +13,11 @@ from django.core.mail import send_mail
 from django.http import HttpResponse
 from django.conf import settings
 
+#from email.MIMEMultipart import MIMEMultipart
+#from email.MIMEText import MIMEText
+#from email.MIMEBase import MIMEBase
+#from email import encoders
+
 from .models import *
 from .forms import *
 
@@ -37,6 +42,16 @@ MESSAGE = "Thank you for submitting your job to the Spring 2021 Computational Ge
           "BIOL 7210 Team 1"
 
 
+#def send_email(link, email):
+#    msg = MIMEText('Your results from RASP-E are ready and can be accessed at: ' + str(link))
+#    msg['From'] = 'gatech-bioinfo@biopredict2021.edu'
+#    msg['To'] = email
+#    msg['Subject'] = 'Georgia Tech Bioinfo Results'
+#    p = Popen(["/usr/sbin/sendmail", "-t", "-oi"], stdin=PIPE)
+#    # Both Python 2.X and 3.X
+#    p.communicate(msg.as_bytes() if sys.version_info >= (3,0) else msg.as_string())
+
+    
 def run_bash_command_in_different_env(command, env):
     logger.info("Running Bash Command: " + str(command))
     
@@ -44,11 +59,11 @@ def run_bash_command_in_different_env(command, env):
         ' "source /projects/team-1/devops/anaconda3/etc/profile.d/conda.sh; ' \
         ' conda activate ' \
         + env + ' ; ' \
-        + command + ' "'
-    logger.debug("Full Python Subprocess Command: " + str(full_command))
+        + command + ' >> /projects/team-1/logs/django_pipeline.log"'
+    logger.info("Full Python Subprocess Command: " + str(full_command))
 
-    out = sp.run(full_command, shell=True, stdout=sp.DEVNULL)
-    logger.debug("Subprocess Log: " + str(out))
+    out = sp.run(full_command, shell=True)
+    logger.info("Subprocess Log: " + str(out))
 
 
 def get_client_args(params, stage):
@@ -67,9 +82,11 @@ def get_client_args(params, stage):
 
 def run_job(clientEmail, job, params):
     logger.info('------------ run_job(clientEmail, files, job, params) -----------')
-    logger.debug('clientEmail = ' + clientEmail)
-    logger.debug('job.id = ' + str(job.id))
-    logger.debug('job.pipeRange = ' + str(job.pipeRange))
+    logger.info('clientEmail = ' + clientEmail)
+    logger.info('job.id = ' + str(job.id))
+    logger.info('job.pipeRange = ' + str(job.pipeRange))
+
+    # send_email("link", clientEmail)
 
     # Determine job characteristics
     pr = job.pipeRange
@@ -93,25 +110,29 @@ def run_job(clientEmail, job, params):
         # Select sample set
         os.mkdir(f'{MEDIA_ROOT}{clientEmail}/sample/')
         for isolate in isolates:
+            logger.info(f"Move input********************{MEDIA_ROOT}{clientEmail}/{isolate}.zip --> /sample")
             os.link(f'{MEDIA_ROOT}{clientEmail}/{isolate}.zip', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip')
 
         # Call stage script
         args = get_client_args(params, GAStage)
         args.append(f'{MEDIA_ROOT}{clientEmail}/sample/')
         # sp.run(['/home/taylor/Desktop/class/BIOL7210/Team1-PredictiveWebServer/fake_genome_assembly_slim.sh'] + args)
-        cmd = f'{SCRIPTS_ROOT}/genome_assembly/fake_genome_assembly_slim.sh {" ".join(args)}'  # Uncomment for testing
-        # cmd = f'{SCRIPTS_ROOT}/genome_assembly/genome_assembly_slim.sh {" ".join(args)}'  # TODO Uncomment for app deployment
+        # cmd = f'{SCRIPTS_ROOT}/genome_assembly/fake_genome_assembly_slim.sh {" ".join(args)}'  # Uncomment for testing
+        logger.info(f"GA run args*********************** {args}")
+        cmd = f'{SCRIPTS_ROOT}/genome_assembly/genome_assembly_slim.sh {" ".join(args)}'  # TODO Uncomment for app deployment
         run_bash_command_in_different_env(cmd, 'genome_assembly')
 
         # Clean up junk files
         outputs = []
         for isolate in isolates:
+            logger.info(f"Link outputs out***********************{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta --> ..")
             os.link(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}.fasta')
             os.link(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.html', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}.html')
             outputs.append(f'{job.id}_{isolate}.fasta')
             outputs.append(f'{job.id}_{isolate}.html')
-        sp.run(['rm', '-r', f'{MEDIA_ROOT}{clientEmail}/sample'])
+        #sp.run(['rm', '-r', f'{MEDIA_ROOT}{clientEmail}/sample'])
         os.chdir(f'{MEDIA_ROOT}{clientEmail}')
+        logger.info(f"Zip outputs******************{outputs}")
         sp.run(['zip', f'{MEDIA_ROOT}{clientEmail}/GA_{job.id}.zip'] + outputs)
 
         # Database changes
@@ -126,7 +147,9 @@ def run_job(clientEmail, job, params):
         # Select sample set
         os.mkdir(f'{MEDIA_ROOT}{clientEmail}/sample/')
         for isolate in isolates:
+            logger.info(f'Link inputs to sample folder*************************{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta')
             os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta')
+            logger.info(f'Zip file inputs:**************************{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta --> {MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip'
             sp.run(['zip', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta'])
 
         # Call stage script
@@ -135,13 +158,15 @@ def run_job(clientEmail, job, params):
                 '-o', f'{MEDIA_ROOT}{clientEmail}/sample/',
                 '-t', '4'] + args
         # sp.run(['/home/taylor/Desktop/class/BIOL7210/Team1-PredictiveWebServer/fake_gene_prediction_master.py'] + args)
-        cmd = f'{SCRIPTS_ROOT}/gene_prediction/src/fake_gene_prediction_master.py {" ".join(args)}'  # Uncomment for testing
-        # cmd = f'{SCRIPTS_ROOT}/gene_prediction/src/gene_prediction_master.py {" ".join(args)}'  # TODO Uncomment for app deployment
+        #cmd = f'{SCRIPTS_ROOT}/gene_prediction/src/fake_gene_prediction_master.py {" ".join(args)}'  # Uncomment for testing
+        cmd = f'{SCRIPTS_ROOT}/gene_prediction/src/gene_prediction_master.py {" ".join(args)}'  # TODO Uncomment for app deployment
+        logger.info(f'Call script with args:**********************{args}')
         run_bash_command_in_different_env(cmd, 'gene_prediction')
 
         # Clean up junk files
         outputs = []
         for isolate in isolates:
+            logger.info(f'Select outputs from sample folder:****************************{MEDIA_ROOT}{clientEmail}/sample/{isolate}_gp.gff -> {MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}_gp.gff')
             os.link(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}_gp.faa', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}_gp.faa')
             os.link(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}_gp.fna', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}_gp.fna')
             os.link(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}_gp.gff', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}_gp.gff')
@@ -150,6 +175,7 @@ def run_job(clientEmail, job, params):
             outputs.append(f'{job.id}_{isolate}_gp.gff')
         sp.run(['rm', '-r', f'{MEDIA_ROOT}{clientEmail}/sample'])
         os.chdir(f'{MEDIA_ROOT}{clientEmail}')
+        logger.info(f'Zip output files************************{MEDIA_ROOT}{clientEmail}/GP_{job.id}.zip <-- {outputs}')
         sp.run(['zip', f'{MEDIA_ROOT}{clientEmail}/GP_{job.id}'] + outputs)
 
         # Database changes
@@ -164,9 +190,11 @@ def run_job(clientEmail, job, params):
         # Select sample set
         os.mkdir(f'{MEDIA_ROOT}{clientEmail}/sample/')
         for isolate in isolates:
+            logger.info(f'Hardlink inputs into sample:*****************{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta --> {MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta')
             os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta')
             os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FAA"] else str(job.id) + "_"}{isolate}{"" if RANGE_INPUTS[pr]["FAA"] else "_gp"}.faa', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.faa')
             os.chdir(f'{MEDIA_ROOT}{clientEmail}/sample/')  # Prevent saving directory structure into zip
+            logger.info(f'Zip file inputs:****************{MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip  <-- {isolate}.fasta, {isolate}.faa')
             sp.run(['zip', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip',
                     f'{isolate}.fasta',
                     f'{isolate}.faa'])
@@ -178,8 +206,9 @@ def run_job(clientEmail, job, params):
                 '-u', '/projects/team-1/tools/functional_annotation/usearch11.0.667_i86linux32',
                 '-D', '/projects/team-1/tools/functional_annotation/deeparg_database'] + args
         # sp.run(['/home/taylor/Desktop/class/BIOL7210/Team1-PredictiveWebServer/fake_functional_annotation_combined.py'] + args)
-        cmd = f'{SCRIPTS_ROOT}/functional_annotation/fake_functional_annotation_combined.py {" ".join(args)}'  # Uncomment for testing
-        # cmd = f'{SCRIPTS_ROOT}/functional_annotation/functional_annotation_combined.py {" ".join(args)}'  # TODO Uncomment for app deployment
+        #cmd = f'{SCRIPTS_ROOT}/functional_annotation/fake_functional_annotation_combined.py {" ".join(args)}'  # Uncomment for testing
+        logger.info(f'Run pipeline script with args:***************** {args}')
+        cmd = f'{SCRIPTS_ROOT}/functional_annotation/functional_annotation_combined.py {" ".join(args)}'  # TODO Uncomment for app deployment
         cenv = 'functional_annotation_deeparg' if '-D' in args else 'functional_annotation'
         run_bash_command_in_different_env(cmd, cenv)
 
@@ -224,8 +253,8 @@ def run_job(clientEmail, job, params):
                        '-o', str(job.id),
                        '-r', '/projects/team-1/src/comparative_genomics/Team1-ComparativeGenomics/camplo_ref.fna']
         # sp.run(['/home/taylor/Desktop/class/BIOL7210/Team1-PredictiveWebServer/fake_Comparative_master_pipeline.sh'] + args)
-        cmd = f'{SCRIPTS_ROOT}/comparative_genomics/Team1-ComparativeGenomics/fake_Comparative_master_pipeline.sh {" ".join(args)}'  # Uncomment for testing
-        # cmd = f'{SCRIPTS_ROOT}/comparative_genomics/Team1-ComparativeGenomics/Comparative_master_pipeline.sh {" ".join(args)}'  # TODO Uncomment for app deployment
+        # cmd = f'{SCRIPTS_ROOT}/comparative_genomics/Team1-ComparativeGenomics/fake_Comparative_master_pipeline.sh {" ".join(args)}'  # Uncomment for testing
+        cmd = f'{SCRIPTS_ROOT}/comparative_genomics/Team1-ComparativeGenomics/Comparative_master_pipeline.sh {" ".join(args)}'  # TODO Uncomment for app deployment
         run_bash_command_in_different_env(cmd, 'comparative_genomics')
 
         # Clean up junk files
@@ -248,6 +277,7 @@ def run_job(clientEmail, job, params):
 
     # Contact user  TODO Figure out how to send email; Alternative is just to print out the link on results.
     # send_mail("Foodborn Pathogen job completed", MESSAGE.format(BASE_URL, job.id), from_email=None, recipient_list=[clientEmail])
+
 
 
 def index(request):

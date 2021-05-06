@@ -40,7 +40,7 @@ for file in os.scandir(args.i):
 		dest= (file.name).replace(".zip", "")
 		with zipfile.ZipFile(file, "r") as zip_ref:
 			zip_ref.extractall(args.i)
-		for subfile in os.scandir(args.i + "/" + dest):
+		for subfile in os.scandir(args.i + dest):
 			shutil.copy2(subfile, args.i)	
 		subprocess.call(["rm", "-r", args.i + dest])
 		#subprocess.call(["rm", "-r", file])
