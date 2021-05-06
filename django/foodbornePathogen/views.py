@@ -130,7 +130,7 @@ def run_job(clientEmail, job, params):
             os.link(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.html', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}.html')
             outputs.append(f'{job.id}_{isolate}.fasta')
             outputs.append(f'{job.id}_{isolate}.html')
-        #sp.run(['rm', '-r', f'{MEDIA_ROOT}{clientEmail}/sample'])
+        sp.run(['/bin/rm', '-fr', f'{MEDIA_ROOT}{clientEmail}/sample'])
         os.chdir(f'{MEDIA_ROOT}{clientEmail}')
         logger.info(f"Zip GA outputs******************{MEDIA_ROOT}{clientEmail}/GA_{job.id}.zip <-- {outputs}")
         sp.run(['zip', f'{MEDIA_ROOT}{clientEmail}/GA_{job.id}.zip'] + outputs)
@@ -173,9 +173,9 @@ def run_job(clientEmail, job, params):
             outputs.append(f'{job.id}_{isolate}_gp.faa')
             outputs.append(f'{job.id}_{isolate}_gp.fna')
             outputs.append(f'{job.id}_{isolate}_gp.gff')
-        sp.run(['rm', '-r', f'{MEDIA_ROOT}{clientEmail}/sample'])
-        os.chdir(f'{MEDIA_ROOT}{clientEmail}')
+        sp.run(['/bin/rm', '-fr', f'{MEDIA_ROOT}{clientEmail}/sample'])
         logger.info(f'Zip output files************************{MEDIA_ROOT}{clientEmail}/GP_{job.id}.zip <-- {outputs}')
+        os.chdir(f'{MEDIA_ROOT}{clientEmail}')
         sp.run(['zip', f'{MEDIA_ROOT}{clientEmail}/GP_{job.id}'] + outputs)
 
         # Database changes
@@ -193,8 +193,8 @@ def run_job(clientEmail, job, params):
             logger.info(f'Hardlink FA inputs into sample:*****************{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta --> {MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta')
             os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta')
             os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FAA"] else str(job.id) + "_"}{isolate}{"" if RANGE_INPUTS[pr]["FAA"] else "_gp"}.faa', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.faa')
-            os.chdir(f'{MEDIA_ROOT}{clientEmail}/sample/')  # Prevent saving directory structure into zip
             logger.info(f'Zip file inputs:****************{MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip  <-- {isolate}.fasta, {isolate}.faa')
+            os.chdir(f'{MEDIA_ROOT}{clientEmail}/sample/')  # Prevent saving directory structure into zip
             sp.run(['zip', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip',
                     f'{isolate}.fasta',
                     f'{isolate}.faa'])
@@ -218,9 +218,9 @@ def run_job(clientEmail, job, params):
             logger.info(f'Link FA output files to parent folder:************** {MEDIA_ROOT}{clientEmail}/sample/{isolate}_fa.gff --> {MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}_fa.gff')
             os.link(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}_fa.gff', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}_fa.gff')
             outputs.append(f'{job.id}_{isolate}_fa.gff')
-        sp.run(['rm', '-r', f'{MEDIA_ROOT}{clientEmail}/sample'])
-        os.chdir(f'{MEDIA_ROOT}{clientEmail}')
+        sp.run(['/bin/rm', '-fr', f'{MEDIA_ROOT}{clientEmail}/sample'])
         logger.info(f'Zip FA outputs into download package:************{MEDIA_ROOT}{clientEmail}/FA_{job.id} <-- {outputs}')
+        os.chdir(f'{MEDIA_ROOT}{clientEmail}')
         sp.run(['zip', f'{MEDIA_ROOT}{clientEmail}/FA_{job.id}'] + outputs)
 
         for isolate in isolates:
@@ -281,7 +281,7 @@ def run_job(clientEmail, job, params):
         if params['get_virulence_factors']:
             logger.info(f'Hardlink VF_table to parent dir:********************* {MEDIA_ROOT}{clientEmail}/sample/VF_table_{job.id}.png --> {MEDIA_ROOT}{clientEmail}/VF_table_{job.id}.png')
             os.link(f'{MEDIA_ROOT}{clientEmail}/sample/VF_table_{job.id}.png', f'{MEDIA_ROOT}{clientEmail}/VF_table_{job.id}.png')
-        sp.run(['rm', '-r', f'{MEDIA_ROOT}{clientEmail}/sample'])
+        sp.run(['/bin/rm', '-fr', f'{MEDIA_ROOT}{clientEmail}/sample'])
 
         logger.info("Comparative Genomics Pipeline Done...")
 
