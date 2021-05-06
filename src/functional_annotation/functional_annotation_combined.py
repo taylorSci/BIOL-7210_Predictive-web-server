@@ -34,7 +34,9 @@ def opts():
 def perform_usearch(inpath, filenames, identity, usearch_loc, outpath):
 
 	##make clustering folder in outpath to put all outputs
-
+	print('/n------usearch location = ' + usearch_loc + '----------/n')
+	
+	print('-------------combining faa files: ' + filenames + '---------------------')
 	f_combined = open(outpath + '/clustering/combined_fasta.faa', 'w')
 	for f in filenames:
 		if '.faa' in f:
@@ -51,6 +53,7 @@ def perform_usearch(inpath, filenames, identity, usearch_loc, outpath):
 	##command: usearch_path -clusterfast outpath/clustering/comgined_fasta.faa -id str(identity) -centroids outpath/clustering/centroids.fa -uc outpath/clustering/seq_labels.uc
 	command = [usearch_loc, '-cluster_fast', outpath + '/clustering/combined_fasta.faa', '-id', str(identity), '-centroids', outpath + '/clustering/centroids.fa', '-uc', outpath + '/clustering/seq_labels.uc']
 	subprocess.run(command)
+	print('-----------clustering output directory:' + outpath + '/clustering/ -----------------')
 
 
 ##-------------EGGNOG MAPPER-----------
@@ -97,6 +100,7 @@ def perform_eggnogmapper(centroids_file, data_directory, output_base, output_dir
 ###-----------DEEPARG----------
 ##usage: perform_deepARG(output_path + '/deeparg/deeparg')
 def perform_deepARG(output_directory):
+	print('------------deeparg ouput directory:' + output_directory + '-----------------')
 ## format output to gff
 	outputfilepath = output_directory + '.align.daa.tsv'
 	annotate_list = []
@@ -127,10 +131,13 @@ def perform_deepARG(output_directory):
 		stop = (ran[1]).rsplit('_')[0]
 		l = query_name + "\t" + "DeepARG" + "\t" + "." + "\t" + start +"\t"+ stop +"\t"+ str(x[1]) +"\t"+"."+"\t"+"."+"\t"+ str(x[2])
 		fh1.write(l + '\n')
+	print('------------deeparg gff location: ' + gfffile + '-------------------')
         
 ##-----PILER-CR----------------
 #usage: perform_pilercr(contigs_directory, output_path + '/pilercr')
 def perform_pilercr(inputdirectory, outputdirectory):
+    print('/n---------contigs directory for pilercr:' + inputdirectory + '---------------')
+    print('/n---------output directory for pilercr:' + outputdirectory + '------------')
     for i in os.listdir(inputdirectory):
         command = ['pilercr', '-in', inputdirectory +'/'+i,'-out', outputdirectory + '/pilercr/' + i[:-6]+'_pilercr_out.txt','-noinfo']
         subprocess.run(command)
@@ -174,6 +181,7 @@ def perform_pilercr(inputdirectory, outputdirectory):
 ##----BACKTRACKING AND WRITING TO GFF------------
 #usage: centroid_matching(outpath+'/clustering/seq_labels.uc')
 def centroid_matching(uc_file):
+    print('------------seq_labels.uc path: ' + uc_file + '---------------')
     print('Matching Sequences')
     centroid_matches = {}
     uc_clusters = open(uc_file, 'r')
@@ -193,6 +201,7 @@ def centroid_matching(uc_file):
 
 ##usage: create_gff_dict(clust_dict, gff_file_path)
 def create_gff_dict(cluster_dict, combined_gff):
+    print('-----------combined_gff path: ' + combined_gff+ '------------')
     gff_dict = {}
     gff_file = open(combined_gff, 'r')
     gff_file = gff_file.readlines()
@@ -226,6 +235,7 @@ def write_gff_files(sequence_list, gff_mapped, output):
                     
 ##usage: add_pilecr(seq_list, outpath + '/merged_gff', pilecr_gff_path)                    
 def add_pilecr(sequence_list, output, pilecr_gff):
+    print('-------pilercr gff location: ' + pilecr_gff + '-------------------')
     gff_list = os.listdir(output)
     pilecr_file = open(pilecr_gff, 'r')
     pilecr_file = pilecr_file.readlines()
@@ -242,6 +252,10 @@ def add_pilecr(sequence_list, output, pilecr_gff):
 #usage annotate_faa_files(output_path + '/merged_gff', gff_list, input_path, contigs_directory, output_path + '/annotated_fasta')
 def annotate_faa_files(gff_directory, gff_list, faa_directory, fna_directory, output):
     print('Annotating .faa files')
+    print('-----------merged gff directory: ' + gff_directory + '--------------')
+    print('----------input faa directory: ' + faa_directory + '--------------')
+    print('-----------input contigs directory: ' + fna_directory + '---------------')
+    print('---------annotated fasta output directory: ' + output + '---------------')
     for gff_file in gff_list:
         gfffile = open(gff_directory + '/' + gff_file, 'r')
         print('annotating ' + gff_file)
@@ -366,6 +380,7 @@ def main():
 		deeparg_bash = 'bash -c "source /projects/team-1/devops/anaconda3/etc/profile.d/conda.sh; conda activate functional_annotation_deeparg; '+ deeparg_command + '"'
 		print('Changing to python 2.7 environment and performing deeparg')
 		conda_change = subprocess.call(deeparg_bash, shell = True) ##activate python 2.7 environment
+		print('/n---------deeparg database path: ' + deeparg_database + '--------------')
 		perform_deepARG(output_path + '/deeparg/deeparg')
 	if options.p==True:
 		print('Performing pilercr...')
