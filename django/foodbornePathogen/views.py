@@ -149,7 +149,7 @@ def run_job(clientEmail, job, params):
         for isolate in isolates:
             logger.info(f'Link inputs to sample folder*************************{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta')
             os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta')
-            logger.info(f'Zip file inputs:**************************{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta --> {MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip'
+            logger.info(f'Zip file inputs:**************************{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta --> {MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip')
             sp.run(['zip', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta'])
 
         # Call stage script
