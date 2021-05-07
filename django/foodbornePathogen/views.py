@@ -59,11 +59,11 @@ def run_bash_command_in_different_env(command, env):
         ' "source /projects/team-1/devops/anaconda3/etc/profile.d/conda.sh; ' \
         ' conda activate ' \
         + env + ' ; ' \
-        + command + ' >> /projects/team-1/logs/django_pipeline.log"'
+        + command + ' >> /projects/team-1/logs/pipeline.log 2>&1"'
     logger.info("Full Python Subprocess Command: " + str(full_command))
 
     out = sp.run(full_command, shell=True)
-    logger.info("Subprocess Log: " + str(out))
+    logger.info("Done Running Pipeline Subprocess: " + str(out))
 
 
 def get_client_args(params, stage):
