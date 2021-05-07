@@ -52,18 +52,18 @@ MESSAGE = "Thank you for submitting your job to the Spring 2021 Computational Ge
 #    p.communicate(msg.as_bytes() if sys.version_info >= (3,0) else msg.as_string())
 
     
-def run_bash_command_in_different_env(command, env):
+def run_bash_command_in_different_env(command, env, interp=''):
     logger.info("Running Bash Command: " + str(command))
     
     full_command = 'bash -c ' \
         ' "source /projects/team-1/devops/anaconda3/etc/profile.d/conda.sh; ' \
         ' conda activate ' \
         + env + ' ; ' \
-        + command + ' >> /projects/team-1/logs/django_pipeline.log"'
+        + interp + ' ' + command + ' >> /projects/team-1/logs/pipeline.log 2>&1"'
     logger.info("Full Python Subprocess Command: " + str(full_command))
 
     out = sp.run(full_command, shell=True)
-    logger.info("Subprocess Log: " + str(out))
+    logger.info("Done Running Pipeline Subprocess: " + str(out))
 
 
 def get_client_args(params, stage):
@@ -145,7 +145,11 @@ def run_job(clientEmail, job, params):
         logger.info("Gene Prediction Pipeline Selected")
 
         # Select sample set
+        logger.info(f'Isolates to be processed:**********************{isolates}')
+        print(f'Isolates to be processed:**********************{isolates}')
         os.mkdir(f'{MEDIA_ROOT}{clientEmail}/sample/')
+        logger.info(f'Made the directory???************************{MEDIA_ROOT}{clientEmail}/sample/')
+        print(f'Made the directory???***********************{MEDIA_ROOT}{clientEmail}/sample/')
         for isolate in isolates:
             logger.info(f'Link GP inputs to sample folder*************************{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta')
             os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta')
@@ -162,7 +166,7 @@ def run_job(clientEmail, job, params):
         #cmd = f'{SCRIPTS_ROOT}/gene_prediction/src/fake_gene_prediction_master.py {" ".join(args)}'  # Uncomment for testing
         cmd = f'{SCRIPTS_ROOT}/gene_prediction/src/gene_prediction_master.py {" ".join(args)}'  # TODO Uncomment for app deployment
         logger.info(f'Call script with args:**********************{args}')
-        run_bash_command_in_different_env(cmd, 'gene_prediction')
+        run_bash_command_in_different_env(cmd, 'gene_prediction', interp='python')
 
         # Clean up junk files
         outputs = []
@@ -210,8 +214,9 @@ def run_job(clientEmail, job, params):
         #cmd = f'{SCRIPTS_ROOT}/functional_annotation/fake_functional_annotation_combined.py {" ".join(args)}'  # Uncomment for testing
         logger.info(f'Run FA script with args:***************** {args}')
         cmd = f'{SCRIPTS_ROOT}/functional_annotation/functional_annotation_combined.py {" ".join(args)}'  # TODO Uncomment for app deployment
-        cenv = 'functional_annotation_deeparg' if '-D' in args else 'functional_annotation'
-        run_bash_command_in_different_env(cmd, cenv)
+        #cenv = 'functional_annotation_deeparg' if '-D' in args else 'functional_annotation'
+        #run_bash_command_in_different_env(cmd, cenv, interp='python')
+        run_bash_command_in_different_env(cmd, 'functional_annotation', interp='python')
 
         # Clean up junk files
         outputs = []
@@ -251,14 +256,18 @@ def run_job(clientEmail, job, params):
                 os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FQ"] else str(job.id) + "_"}{isolate}.zip', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip')
             logger.info(f'Zipping CG inputs:********************* {MEDIA_ROOT}{clientEmail}/sample/{isolate}_.zip  <-- {inputs}')
             sp.run(['zip', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}_.zip'] + inputs)
-            logger.info(f'Renaming zipped CG inputs:******************* {MEDIA_ROOT}{clientEmail}/sample/{isolate}_.zip <-- {MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip')
+            logger.info(f'Renaming zipped CG inputs:******************* {MEDIA_ROOT}{clientEmail}/sample/{isolate}_.zip --> {MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip')
             os.rename(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}_.zip', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip')
 
         # Call stage script
         args = get_client_args(params, CGStage)
         args = args + ['-a', f'{MEDIA_ROOT}{clientEmail}/sample/',
+                       '-i', f'{MEDIA_ROOT}{clientEmail}/sample/',
+                       '-I', f'{MEDIA_ROOT}{clientEmail}/sample/',
+                       '-g', f'{MEDIA_ROOT}{clientEmail}/sample/',
                        '-O', f'{MEDIA_ROOT}{clientEmail}/sample/',
                        '-o', str(job.id),
+                       '-s', "CGT1615",
                        '-r', '/projects/team-1/src/comparative_genomics/Team1-ComparativeGenomics/camplo_ref.fna']
         # sp.run(['/home/taylor/Desktop/class/BIOL7210/Team1-PredictiveWebServer/fake_Comparative_master_pipeline.sh'] + args)
         # cmd = f'{SCRIPTS_ROOT}/comparative_genomics/Team1-ComparativeGenomics/fake_Comparative_master_pipeline.sh {" ".join(args)}'  # Uncomment for testing
@@ -352,22 +361,26 @@ def options(request, **kwargs):
             sample.save()
 
         # Make stages
+        allParams = {}
         for i in range(first, last+1):
             params = {}
             for attr in STAGELIST[i]._meta.get_fields(include_parents=False):
                 if isinstance(attr, models.BooleanField):
                     if attr.name in request.POST:
                         params[attr.name] = True
+                        allParams[attr.name] = True
                     else:
                         params[attr.name] = False
+                        allParams[attr.name] = False
                 else:
                     if attr.name in request.POST:
                         params[attr.name] = request.POST[attr.name]
+                        allParams[attr.name] = request.POST[attr.name]
             stage = STAGELIST[i](job=job, **params)
             stage.save()
 
         # Begin the job
-        newJob = Thread(target=run_job, args=(userEmail, job, params))
+        newJob = Thread(target=run_job, args=(userEmail, job, allParams))
         newJob.start()
 
         return HttpResponseRedirect(f'/fbp/submitted/{job}')

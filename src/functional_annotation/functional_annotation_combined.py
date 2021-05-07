@@ -1,4 +1,5 @@
-#/usr/bin/env python3
+#!/projects/team-1/devops/anaconda3/envs/functional_annotation_deeparg/bin/python
+
 # -*- encoding: utf-8 -*-
 
 ###----------------------USAGE-------------------
@@ -36,7 +37,7 @@ def perform_usearch(inpath, filenames, identity, usearch_loc, outpath):
 	##make clustering folder in outpath to put all outputs
 	print('/n------usearch location = ' + usearch_loc + '----------/n')
 	
-	print('-------------combining faa files: ' + filenames + '---------------------')
+	print('-------------combining faa files: ' + ' '.join(filenames) + '---------------------')
 	f_combined = open(outpath + '/clustering/combined_fasta.faa', 'w')
 	for f in filenames:
 		if '.faa' in f:
@@ -323,8 +324,8 @@ def main():
                 	dest= (file.name).strip(".zip")
                 	with zipfile.ZipFile(file, "r") as zip_ref:
                         	zip_ref.extractall(options.I)
-                	for subfile in os.scandir(options.I + "/" + dest):
-                        	shutil.copy2(subfile, options.I)
+                	#for subfile in os.scandir(options.I + "/" + dest):
+                        #	shutil.copy2(subfile, options.I)
                 	subprocess.call(["rm", "-r", options.I + "/" + (file.name).strip(".zip")])
 			#subprocess.call(["rm", "-r", file])
 
