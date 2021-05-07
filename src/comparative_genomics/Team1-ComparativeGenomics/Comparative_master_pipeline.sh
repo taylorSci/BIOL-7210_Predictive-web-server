@@ -350,7 +350,7 @@ fi
 if $virulence; then
 	
 	# check if input is correct
-	if  [$virulence -a -z $assembled_input ]
+	if  [ $virulence -a -z $assembled_input ]
 	then
 		echo "Assemblies do not exist. Please call the -i flag and provide a path to the input directory of assembled reads"
 		exit
@@ -443,7 +443,7 @@ if $resistance; then
 		long_line+="	$line"
 	done
 
-	echo "****** These are the headers for 
+	echo "****** These are the headers for "
 	echo "$long_line" > ${output_path}/res_table_$output.txt
 
 	# check if gene is in each file and add info to res_table.txt
