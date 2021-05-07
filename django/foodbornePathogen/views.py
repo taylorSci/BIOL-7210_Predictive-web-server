@@ -52,14 +52,14 @@ MESSAGE = "Thank you for submitting your job to the Spring 2021 Computational Ge
 #    p.communicate(msg.as_bytes() if sys.version_info >= (3,0) else msg.as_string())
 
     
-def run_bash_command_in_different_env(command, env):
+def run_bash_command_in_different_env(command, env, interp=''):
     logger.info("Running Bash Command: " + str(command))
     
     full_command = 'bash -c ' \
         ' "source /projects/team-1/devops/anaconda3/etc/profile.d/conda.sh; ' \
         ' conda activate ' \
         + env + ' ; ' \
-        + command + ' >> /projects/team-1/logs/pipeline.log 2>&1"'
+        + interp + ' ' + command + ' >> /projects/team-1/logs/pipeline.log 2>&1"'
     logger.info("Full Python Subprocess Command: " + str(full_command))
 
     out = sp.run(full_command, shell=True)
@@ -166,7 +166,7 @@ def run_job(clientEmail, job, params):
         #cmd = f'{SCRIPTS_ROOT}/gene_prediction/src/fake_gene_prediction_master.py {" ".join(args)}'  # Uncomment for testing
         cmd = f'{SCRIPTS_ROOT}/gene_prediction/src/gene_prediction_master.py {" ".join(args)}'  # TODO Uncomment for app deployment
         logger.info(f'Call script with args:**********************{args}')
-        run_bash_command_in_different_env(cmd, 'gene_prediction')
+        run_bash_command_in_different_env(cmd, 'gene_prediction', interp='python')
 
         # Clean up junk files
         outputs = []
@@ -214,8 +214,9 @@ def run_job(clientEmail, job, params):
         #cmd = f'{SCRIPTS_ROOT}/functional_annotation/fake_functional_annotation_combined.py {" ".join(args)}'  # Uncomment for testing
         logger.info(f'Run FA script with args:***************** {args}')
         cmd = f'{SCRIPTS_ROOT}/functional_annotation/functional_annotation_combined.py {" ".join(args)}'  # TODO Uncomment for app deployment
-        cenv = 'functional_annotation_deeparg' if '-D' in args else 'functional_annotation'
-        run_bash_command_in_different_env(cmd, cenv)
+        #cenv = 'functional_annotation_deeparg' if '-D' in args else 'functional_annotation'
+        #run_bash_command_in_different_env(cmd, cenv, interp='python')
+        run_bash_command_in_different_env(cmd, 'functional_annotation', interp='python')
 
         # Clean up junk files
         outputs = []
