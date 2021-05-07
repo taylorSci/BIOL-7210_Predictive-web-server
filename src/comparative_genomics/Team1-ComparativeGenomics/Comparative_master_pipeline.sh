@@ -90,9 +90,9 @@ echo "******input directory is $isolates"
 for i in $isolates
 do
 	echo "*********unzipping $i in $isolates" 
-	unzip $all_input/$i.zip -d $output_path
-        mv $all_input/$i/* $output_path/
-	rmdir $all_input/$i/
+	unzip -o $all_input/$i.zip -d $output_path
+	#mv $all_input/$i/* $output_path/
+	#rmdir $all_input/$i/
 done
 
 
@@ -125,7 +125,7 @@ if $ANIb; then
 	conda activate pyani_env
 		
 	#download tools
-	echo "Installing pyani..."
+	#echo "Installing pyani..."
 	#conda install -y biopython
 	#conda install -y -c bioconda pyani
 	#conda install -y -c bioconda blast-legacy

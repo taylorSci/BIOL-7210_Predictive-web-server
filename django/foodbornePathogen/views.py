@@ -256,14 +256,18 @@ def run_job(clientEmail, job, params):
                 os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FQ"] else str(job.id) + "_"}{isolate}.zip', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip')
             logger.info(f'Zipping CG inputs:********************* {MEDIA_ROOT}{clientEmail}/sample/{isolate}_.zip  <-- {inputs}')
             sp.run(['zip', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}_.zip'] + inputs)
-            logger.info(f'Renaming zipped CG inputs:******************* {MEDIA_ROOT}{clientEmail}/sample/{isolate}_.zip <-- {MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip')
+            logger.info(f'Renaming zipped CG inputs:******************* {MEDIA_ROOT}{clientEmail}/sample/{isolate}_.zip --> {MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip')
             os.rename(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}_.zip', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip')
 
         # Call stage script
         args = get_client_args(params, CGStage)
         args = args + ['-a', f'{MEDIA_ROOT}{clientEmail}/sample/',
+                       '-i', f'{MEDIA_ROOT}{clientEmail}/sample/',
+                       '-I', f'{MEDIA_ROOT}{clientEmail}/sample/',
+                       '-g', f'{MEDIA_ROOT}{clientEmail}/sample/',
                        '-O', f'{MEDIA_ROOT}{clientEmail}/sample/',
                        '-o', str(job.id),
+                       '-s', "CGT1615",
                        '-r', '/projects/team-1/src/comparative_genomics/Team1-ComparativeGenomics/camplo_ref.fna']
         # sp.run(['/home/taylor/Desktop/class/BIOL7210/Team1-PredictiveWebServer/fake_Comparative_master_pipeline.sh'] + args)
         # cmd = f'{SCRIPTS_ROOT}/comparative_genomics/Team1-ComparativeGenomics/fake_Comparative_master_pipeline.sh {" ".join(args)}'  # Uncomment for testing
