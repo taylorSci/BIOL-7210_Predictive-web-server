@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 from pathlib import Path
 import logging, logging.config
+import colorlog
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -104,19 +105,27 @@ LOGGING = {
             'format': '\033[93m{levelname} {asctime}\033[0m\n{message}',
             'style': '{',
         },
+        'color': {
+            '()': 'colorlog.ColoredFormatter',
+            'format': '%(log_color)s[[%(levelname)s]] %(asctime)s:\033[0m\n%(message)s\n',
+#            'format': '%(log_color)s[[%(levelname)s]] %(asctime)s\033[0m\n[Message Origin]: File=%(pathname)s Function=%(funcName)s Line=%(lineno)d\n%(message)s\n',
+#            'format': '%(log_color)s[[%(levelname)s]] %(asctime)s\033[0m\n[File]: %(pathname)s [Function]: %(funcName)s [Line]: %(lineno)d\n------------------------ [ Start Full Log Message ] ------------------------\n%(message)s\n------------------------- [ End Full Log Message ] -------------------------\n',
+            'datefmt' : "%y/%b/%Y %H:%M:%S",
+            'log_colors': {
+                'DEBUG':  'blue',
+                'INFO':  'green',
+                'WARNING':  'yellow',
+                'ERROR':    'red',
+                'CRITICAL': 'bold_red',
+            },
+        },
     },
     'handlers': {
         'django_file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': '/projects/team-1/logs/django.log',
-            'formatter': 'timestamp',
-        },
-        'debug_file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': '/projects/team-1/logs/django_debug.log',
-            'formatter': 'timestamp',
+            'formatter': 'color',
         },
     },
     'loggers': {
