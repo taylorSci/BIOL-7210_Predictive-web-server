@@ -357,22 +357,26 @@ def options(request, **kwargs):
             sample.save()
 
         # Make stages
+        allParams = {}
         for i in range(first, last+1):
             params = {}
             for attr in STAGELIST[i]._meta.get_fields(include_parents=False):
                 if isinstance(attr, models.BooleanField):
                     if attr.name in request.POST:
                         params[attr.name] = True
+                        allParams[attr.name] = True
                     else:
                         params[attr.name] = False
+                        allParams[attr.name] = False
                 else:
                     if attr.name in request.POST:
                         params[attr.name] = request.POST[attr.name]
+                        allParams[attr.name] = request.POST[attr.name]
             stage = STAGELIST[i](job=job, **params)
             stage.save()
 
         # Begin the job
-        newJob = Thread(target=run_job, args=(userEmail, job, params))
+        newJob = Thread(target=run_job, args=(userEmail, job, allParams))
         newJob.start()
 
         return HttpResponseRedirect(f'/fbp/submitted/{job}')
