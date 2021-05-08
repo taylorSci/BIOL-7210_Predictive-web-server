@@ -54,7 +54,7 @@ PARAMETER_ABBREVS = {'cut_mean_quality': 'M',
                      'min_block_size': 'b',
                      'block_coverage_threshold': 'c',
 
-                     'run_GLIMMER': 'g',
+                     'run_GLIMMER': 'gl',
                      'run_GeneMark': 'gm',
                      'run_Prodigal': 'p',
 
