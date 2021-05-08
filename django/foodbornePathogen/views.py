@@ -108,14 +108,14 @@ def run_job(clientEmail, job, params):
             isolate.seqReadsAvailable = True
 
         # Select sample set
-        os.mkdir(f'{MEDIA_ROOT}{clientEmail}/sample/')
+        os.mkdir(f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/')
         for isolate in isolates:
-            logger.info(f"Move GA input********************: {MEDIA_ROOT}{clientEmail}/{isolate}.zip --> /sample")
-            os.link(f'{MEDIA_ROOT}{clientEmail}/{isolate}.zip', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip')
+            logger.info(f"Move GA input********************: {MEDIA_ROOT}{clientEmail}/{isolate}.zip --> /sample_{job.id}")
+            os.link(f'{MEDIA_ROOT}{clientEmail}/{isolate}.zip', f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}.zip')
 
         # Call stage script
         args = get_client_args(params, GAStage)
-        args.append(f'{MEDIA_ROOT}{clientEmail}/sample/')
+        args.append(f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/')
         # sp.run(['/home/taylor/Desktop/class/BIOL7210/Team1-PredictiveWebServer/fake_genome_assembly_slim.sh'] + args)
         # cmd = f'{SCRIPTS_ROOT}/genome_assembly/fake_genome_assembly_slim.sh {" ".join(args)}'  # Uncomment for testing
         logger.info(f"GA run args*********************** {args}")
@@ -125,12 +125,12 @@ def run_job(clientEmail, job, params):
         # Clean up junk files
         outputs = []
         for isolate in isolates:
-            logger.info(f"Link outputs out parent folder: ***********************{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta --> ..")
-            os.link(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}.fasta')
-            os.link(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.html', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}.html')
+            logger.info(f"Link outputs out parent folder: ***********************{MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}.fasta --> {MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}")
+            os.link(f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}.fasta', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}.fasta')
+            os.link(f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}.html', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}.html')
             outputs.append(f'{job.id}_{isolate}.fasta')
             outputs.append(f'{job.id}_{isolate}.html')
-        sp.run(['/bin/rm', '-fr', f'{MEDIA_ROOT}{clientEmail}/sample'])
+        sp.run(['/bin/rm', '-fr', f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}'])
         os.chdir(f'{MEDIA_ROOT}{clientEmail}')
         logger.info(f"Zip GA outputs******************{MEDIA_ROOT}{clientEmail}/GA_{job.id}.zip <-- {outputs}")
         sp.run(['zip', f'{MEDIA_ROOT}{clientEmail}/GA_{job.id}.zip'] + outputs)
@@ -147,20 +147,18 @@ def run_job(clientEmail, job, params):
         # Select sample set
         logger.info(f'Isolates to be processed:**********************{isolates}')
         print(f'Isolates to be processed:**********************{isolates}')
-        os.mkdir(f'{MEDIA_ROOT}{clientEmail}/sample/')
-        logger.info(f'Made the directory???************************{MEDIA_ROOT}{clientEmail}/sample/')
-        print(f'Made the directory???***********************{MEDIA_ROOT}{clientEmail}/sample/')
+        os.mkdir(f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/')
         for isolate in isolates:
             logger.info(f'Link GP inputs to sample folder*************************{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta')
-            os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta')
-            logger.info(f'Zip file inputs:**************************{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta --> {MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip')
-            os.chdir(f'{MEDIA_ROOT}{clientEmail}/sample/')
+            os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta', f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}.fasta')
+            logger.info(f'Zip file inputs:**************************{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta --> {MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}.zip')
+            os.chdir(f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/')
             sp.run(['zip', f'{isolate}.zip', f'{isolate}.fasta'])
 
         # Call stage script
         args = get_client_args(params, GPStage)
-        args = ['-i', f'{MEDIA_ROOT}{clientEmail}/sample/',
-                '-o', f'{MEDIA_ROOT}{clientEmail}/sample/',
+        args = ['-i', f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/',
+                '-o', f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/',
                 '-t', '4'] + args
         # sp.run(['/home/taylor/Desktop/class/BIOL7210/Team1-PredictiveWebServer/fake_gene_prediction_master.py'] + args)
         #cmd = f'{SCRIPTS_ROOT}/gene_prediction/src/fake_gene_prediction_master.py {" ".join(args)}'  # Uncomment for testing
@@ -178,7 +176,7 @@ def run_job(clientEmail, job, params):
             outputs.append(f'{job.id}_{isolate}_gp.faa')
             outputs.append(f'{job.id}_{isolate}_gp.fna')
             outputs.append(f'{job.id}_{isolate}_gp.gff')
-        sp.run(['/bin/rm', '-fr', f'{MEDIA_ROOT}{clientEmail}/sample'])
+        sp.run(['/bin/rm', '-fr', f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}'])
         logger.info(f'Zip output files************************{MEDIA_ROOT}{clientEmail}/GP_{job.id}.zip <-- {outputs}')
         os.chdir(f'{MEDIA_ROOT}{clientEmail}')
         sp.run(['zip', f'{MEDIA_ROOT}{clientEmail}/GP_{job.id}'] + outputs)
@@ -195,19 +193,19 @@ def run_job(clientEmail, job, params):
         # Select sample set
         os.mkdir(f'{MEDIA_ROOT}{clientEmail}/sample/')
         for isolate in isolates:
-            logger.info(f'Hardlink FA inputs into sample:*****************{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta --> {MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta')
-            os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta')
-            os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FAA"] else str(job.id) + "_"}{isolate}{"" if RANGE_INPUTS[pr]["FAA"] else "_gp"}.faa', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.faa')
-            logger.info(f'Zip file inputs:****************{MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip  <-- {isolate}.fasta, {isolate}.faa')
-            os.chdir(f'{MEDIA_ROOT}{clientEmail}/sample/')  # Prevent saving directory structure into zip
-            sp.run(['zip', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip',
+            logger.info(f'Hardlink FA inputs into sample:*****************{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta --> {MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}.fasta')
+            os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta', f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}.fasta')
+            os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FAA"] else str(job.id) + "_"}{isolate}{"" if RANGE_INPUTS[pr]["FAA"] else "_gp"}.faa', f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}.faa')
+            logger.info(f'Zip file inputs:****************{MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}.zip  <-- {isolate}.fasta, {isolate}.faa')
+            os.chdir(f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/')  # Prevent saving directory structure into zip
+            sp.run(['zip', f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}.zip',
                     f'{isolate}.fasta',
                     f'{isolate}.faa'])
 
         # Call stage script
         args = get_client_args(params, FAStage)
-        args = ['-I', f'{MEDIA_ROOT}{clientEmail}/sample/',
-                '-O', f'{MEDIA_ROOT}{clientEmail}/sample/',
+        args = ['-I', f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/',
+                '-O', f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/',
                 '-u', '/projects/team-1/tools/functional_annotation/usearch11.0.667_i86linux32',
                 '-D', '/projects/team-1/tools/functional_annotation/deeparg_database'] + args
         # sp.run(['/home/taylor/Desktop/class/BIOL7210/Team1-PredictiveWebServer/fake_functional_annotation_combined.py'] + args)
@@ -221,10 +219,10 @@ def run_job(clientEmail, job, params):
         # Clean up junk files
         outputs = []
         for isolate in isolates:
-            logger.info(f'Link FA output files to parent folder:************** {MEDIA_ROOT}{clientEmail}/sample/{isolate}_fa.gff --> {MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}_fa.gff')
-            os.link(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}_fa.gff', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}_fa.gff')
+            logger.info(f'Link FA output files to parent folder:************** {MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}_fa.gff --> {MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}_fa.gff')
+            os.link(f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}_fa.gff', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}_fa.gff')
             outputs.append(f'{job.id}_{isolate}_fa.gff')
-        sp.run(['/bin/rm', '-fr', f'{MEDIA_ROOT}{clientEmail}/sample'])
+        sp.run(['/bin/rm', '-fr', f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}'])
         logger.info(f'Zip FA outputs into download package:************{MEDIA_ROOT}{clientEmail}/FA_{job.id} <-- {outputs}')
         os.chdir(f'{MEDIA_ROOT}{clientEmail}')
         sp.run(['zip', f'{MEDIA_ROOT}{clientEmail}/FA_{job.id}'] + outputs)
@@ -238,34 +236,34 @@ def run_job(clientEmail, job, params):
         logger.info("Comparative Genomics Pipeline Selected")
 
         # Select sample set
-        os.mkdir(f'{MEDIA_ROOT}{clientEmail}/sample/')
-        os.chdir(f'{MEDIA_ROOT}{clientEmail}/sample/')
+        os.mkdir(f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/')
+        os.chdir(f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/')
         for isolate in isolates:
             inputs = []
             if params['run_ANIm'] or params['run_parSNP'] or params['get_virulence_factors']:
-                logger.info(f'Move CG input FASTA to sample:************:{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta --> {MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta')
+                logger.info(f'Move CG input FASTA to sample:************:{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta --> {MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}.fasta')
                 inputs.append(f'{isolate}.fasta')
-                os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta')
+                os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta', f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}.fasta')
             if params['get_resistance_factors']:
-                logger.info(f'Move CG input GFF to sample:************:{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["GFF"] else str(job.id) + "_"}{isolate}{"" if RANGE_INPUTS[pr]["GFF"] else "_fa"}.gff --> {MEDIA_ROOT}{clientEmail}/sample/{isolate}.gff')
+                logger.info(f'Move CG input GFF to sample:************:{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["GFF"] else str(job.id) + "_"}{isolate}{"" if RANGE_INPUTS[pr]["GFF"] else "_fa"}.gff --> {MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}.gff')
                 inputs.append(f'{isolate}.gff')
-                os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["GFF"] else str(job.id) + "_"}{isolate}{"" if RANGE_INPUTS[pr]["GFF"] else "_fa"}.gff', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.gff')
+                os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["GFF"] else str(job.id) + "_"}{isolate}{"" if RANGE_INPUTS[pr]["GFF"] else "_fa"}.gff', f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}.gff')
             if params['run_stringMLST']:
-                logger.info(f'Move CG input FQ to sample:************:{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FQ"] else str(job.id) + "_"}{isolate}.zip --> {MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip')
+                logger.info(f'Move CG input FQ to sample:************:{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FQ"] else str(job.id) + "_"}{isolate}.zip --> {MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}.zip')
                 inputs.append(f'{isolate}.zip')
-                os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FQ"] else str(job.id) + "_"}{isolate}.zip', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip')
-            logger.info(f'Zipping CG inputs:********************* {MEDIA_ROOT}{clientEmail}/sample/{isolate}_.zip  <-- {inputs}')
-            sp.run(['zip', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}_.zip'] + inputs)
-            logger.info(f'Renaming zipped CG inputs:******************* {MEDIA_ROOT}{clientEmail}/sample/{isolate}_.zip --> {MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip')
-            os.rename(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}_.zip', f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}.zip')
+                os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FQ"] else str(job.id) + "_"}{isolate}.zip', f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}.zip')
+            logger.info(f'Zipping CG inputs:********************* {MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}_.zip  <-- {inputs}')
+            sp.run(['zip', f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}_.zip'] + inputs)
+            logger.info(f'Renaming zipped CG inputs:******************* {MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}_.zip --> {MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}.zip')
+            os.rename(f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}_.zip', f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}.zip')
 
         # Call stage script
         args = get_client_args(params, CGStage)
-        args = args + ['-a', f'{MEDIA_ROOT}{clientEmail}/sample/',
-                       '-i', f'{MEDIA_ROOT}{clientEmail}/sample/',
-                       '-I', f'{MEDIA_ROOT}{clientEmail}/sample/',
-                       '-g', f'{MEDIA_ROOT}{clientEmail}/sample/',
-                       '-O', f'{MEDIA_ROOT}{clientEmail}/sample/',
+        args = args + ['-a', f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/',
+                       '-i', f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/',
+                       '-I', f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/',
+                       '-g', f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/',
+                       '-O', f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/',
                        '-o', str(job.id),
                        '-s', "CGT1615",
                        '-r', '/projects/team-1/src/comparative_genomics/Team1-ComparativeGenomics/camplo_ref.fna']
@@ -277,20 +275,20 @@ def run_job(clientEmail, job, params):
 
         # Clean up junk files
         if params['run_ANIm']:
-            logger.info(f'Hardlink ANI to parent dir:********************* {MEDIA_ROOT}{clientEmail}/sample/ANIm_percentage_identity.png --> {MEDIA_ROOT}{clientEmail}/ANIm_percentage_identity_{job.id}.png')
-            os.link(f'{MEDIA_ROOT}{clientEmail}/sample/ANIm_percentage_identity.png', f'{MEDIA_ROOT}{clientEmail}/ANIm_percentage_identity_{job.id}.png')
+            logger.info(f'Hardlink ANI to parent dir:********************* {MEDIA_ROOT}{clientEmail}/sample_{job.id}/ANIm_percentage_identity.png --> {MEDIA_ROOT}{clientEmail}/ANIm_percentage_identity_{job.id}.png')
+            os.link(f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/ANIm_percentage_identity.png', f'{MEDIA_ROOT}{clientEmail}/ANIm_percentage_identity_{job.id}.png')
         if params['run_stringMLST']:
-            logger.info(f'Hardlink MLST to parent dir:********************* {MEDIA_ROOT}{clientEmail}/sample/MLSTtree_{job.id}.pdf --> {MEDIA_ROOT}{clientEmail}/MLSTtree_{job.id}.pdf')
-            os.link(f'{MEDIA_ROOT}{clientEmail}/sample/MLSTtree_{job.id}.pdf', f'{MEDIA_ROOT}{clientEmail}/MLSTtree_{job.id}.pdf')
+            logger.info(f'Hardlink MLST to parent dir:********************* {MEDIA_ROOT}{clientEmail}/sample_{job.id}/MLSTtree_{job.id}.pdf --> {MEDIA_ROOT}{clientEmail}/MLSTtree_{job.id}.pdf')
+            os.link(f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/MLSTtree_{job.id}.pdf', f'{MEDIA_ROOT}{clientEmail}/MLSTtree_{job.id}.pdf')
         if params['run_parSNP']:
-            logger.info(f'Hardlink SNP to parent dir:********************* {MEDIA_ROOT}{clientEmail}/sample/SNP_{job.id}.pdf --> {MEDIA_ROOT}{clientEmail}/SNP_{job.id}.pdf')
-            os.link(f'{MEDIA_ROOT}{clientEmail}/sample/SNP_{job.id}.pdf', f'{MEDIA_ROOT}{clientEmail}/SNP_{job.id}.pdf')
+            logger.info(f'Hardlink SNP to parent dir:********************* {MEDIA_ROOT}{clientEmail}/sample_{job.id}/SNP_{job.id}.pdf --> {MEDIA_ROOT}{clientEmail}/SNP_{job.id}.pdf')
+            os.link(f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/SNP_{job.id}.pdf', f'{MEDIA_ROOT}{clientEmail}/SNP_{job.id}.pdf')
         if params['get_resistance_factors']:
-            logger.info(f'Hardlink resis_table to parent dir:********************* {MEDIA_ROOT}{clientEmail}/sample/res_table_{job.id}.png --> {MEDIA_ROOT}{clientEmail}/res_table_{job.id}.png{MEDIA_ROOT}{clientEmail}/res_table_{job.id}.png')
-            os.link(f'{MEDIA_ROOT}{clientEmail}/sample/res_table_{job.id}.png', f'{MEDIA_ROOT}{clientEmail}/res_table_{job.id}.png')
+            logger.info(f'Hardlink resis_table to parent dir:********************* {MEDIA_ROOT}{clientEmail}/sample_{job.id}/res_table_{job.id}.png --> {MEDIA_ROOT}{clientEmail}/res_table_{job.id}.png{MEDIA_ROOT}{clientEmail}/res_table_{job.id}.png')
+            os.link(f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/res_table_{job.id}.png', f'{MEDIA_ROOT}{clientEmail}/res_table_{job.id}.png')
         if params['get_virulence_factors']:
-            logger.info(f'Hardlink VF_table to parent dir:********************* {MEDIA_ROOT}{clientEmail}/sample/VF_table_{job.id}.png --> {MEDIA_ROOT}{clientEmail}/VF_table_{job.id}.png')
-            os.link(f'{MEDIA_ROOT}{clientEmail}/sample/VF_table_{job.id}.png', f'{MEDIA_ROOT}{clientEmail}/VF_table_{job.id}.png')
+            logger.info(f'Hardlink VF_table to parent dir:********************* {MEDIA_ROOT}{clientEmail}/sample_{job.id}/VF_table_{job.id}.png --> {MEDIA_ROOT}{clientEmail}/VF_table_{job.id}.png')
+            os.link(f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/VF_table_{job.id}.png', f'{MEDIA_ROOT}{clientEmail}/VF_table_{job.id}.png')
         sp.run(['/bin/rm', '-fr', f'{MEDIA_ROOT}{clientEmail}/sample'])
 
         logger.info("Comparative Genomics Pipeline Done...")
