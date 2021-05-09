@@ -8,7 +8,7 @@ def redirect(request):
     return HttpResponseRedirect('fbp/')
 
 
-def download(request, userEmail, fileName):
+def download_results(request, userEmail, fileName):
     with open(f'{settings.MEDIA_ROOT}{userEmail}/{fileName}', 'rb') as dl:
         mimeType = mimetypes.guess_type(f'{fileName}')
         response = HttpResponse(dl, content_type=mimeType)

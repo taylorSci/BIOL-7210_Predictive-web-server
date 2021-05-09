@@ -5,6 +5,7 @@ import subprocess as sp
 from subprocess import PIPE
 import logging
 import os
+import mimetypes
 
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
@@ -16,21 +17,8 @@ from django.conf import settings
 from .models import *
 from .forms import *
 
-'''
 import smtplib, ssl
-port = 465 # For SSL
-smtp_server = "smtp.gmail.com"
-sender_email = "fbpservernotify.predict2021@gmail.com" # Enter your address
-receiver_email = "" # Enter receiver address
-password = ""
-message = """\
-Subject: Hi there
-This message is sent from Python, again."""
-context = ssl.create_default_context()
-with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
-server.login(sender_email, password)
-server.sendmail(sender_email, receiver_email, message)
-'''
+
 
 logger = logging.getLogger("django")  # /projects/team-1/django/django.log
 
@@ -52,15 +40,29 @@ MESSAGE = "Thank you for submitting your job to the Spring 2021 Computational Ge
           "Thank you,\n" \
           "BIOL 7210 Team 1"
 
+# send_mail("Foodborn Pathogen job completed", MESSAGE.format(BASE_URL, job.id), from_email=None, recipient_list=[clientEmail])
+def send_results_email(results_url, receiver_email):
+    logger.info("Preparing email for: " + receiver_email + " <" + results_url + ">")
 
-#def send_email(link, email):
-#    msg = MIMEText('Your results from RASP-E are ready and can be accessed at: ' + str(link))
-#    msg['From'] = 'gatech-bioinfo@biopredict2021.edu'
-#    msg['To'] = email
-#    msg['Subject'] = 'Georgia Tech Bioinfo Results'
-#    p = Popen(["/usr/sbin/sendmail", "-t", "-oi"], stdin=PIPE)
-#    # Both Python 2.X and 3.X
-#    p.communicate(msg.as_bytes() if sys.version_info >= (3,0) else msg.as_string())
+    port = 465  # For SSL
+    smtp_server = "smtp.gmail.com"
+    sender_email = "fbpservernotify.predict2021@gmail.com"
+    f = open('/projects/team-1/devops/email.key')
+    password = f.readline()
+    f.close()
+    message = ('Subject: Results | FOODBORNE PATHOGEN WEBSERVER\n'
+               "Thank you for submitting your job to the Spring 2021"
+               "Computational Genomics Team 1 Foodborne Pathogen Predictive Webserver.\n\n"
+               "You're job has been completed. Results can be viewed at:\n"
+               + results_url +
+               "\n\nThank you,\n"
+               "BIOL 7210 Team 1\n")
+    context = ssl.create_default_context()
+    with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
+        server.login(sender_email, password)
+        server.sendmail(sender_email, receiver_email, message)
+
+    logger.info("Done preparing email for: " + receiver_email + " <" + results_url + ">")
 
     
 def run_bash_command_in_different_env(command, env, interp=''):
@@ -97,7 +99,7 @@ def run_job(clientEmail, job, params):
     logger.info('job.id = ' + str(job.id))
     logger.info('job.pipeRange = ' + str(job.pipeRange))
 
-    # send_email("link", clientEmail)
+    send_results_email(str(BASE_URL) + "fbp/results/" + str(job.id), clientEmail)
 
     # Determine job characteristics
     pr = job.pipeRange
@@ -411,4 +413,19 @@ def results(request, **kwargs):  # TODO Construct results page
     context = deepcopy(CONTEXT)
     context['userDir'] = f"{MEDIA_ROOT}{Job.objects.get(id=kwargs['job_id']).user.email}"
     context['jobID'] = kwargs['job_id']
+    pipelineRange = Job.objects.get(id=kwargs['job_id']).pipeRange
+    context['first'], context['last'] = RANGES[pipelineRange]
     return render(request, 'foodbornePathogen/results.html', context)
+
+
+def download_static(request, subdir, filename):
+    _, ext = osp.splitext(filename)
+    if ext == '.txt':
+        mode = 'r'
+    elif ext == '.zip':
+        mode = 'rb'
+    with open(f'/projects/team-1/django/foodbornePathogen/static/foodbornePathogen/{subdir}/{filename}', mode) as dl:
+        mimeType = mimetypes.guess_type(f'{filename}')
+        response = HttpResponse(dl, content_type=mimeType)
+        response['Content-Disposition'] = f"attachment; filename={filename}"
+        return response

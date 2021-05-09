@@ -23,6 +23,5 @@ from . import views
 urlpatterns = [
     path('fbp/', include('foodbornePathogen.urls')),
     path('admin/', admin.site.urls),
-    path(f'{settings.MEDIA_ROOT[1:]}<str:userEmail>/<str:fileName>', views.download),
-    path('', views.redirect),
-]
+    path(f'{settings.MEDIA_ROOT[1:]}<str:userEmail>/<str:fileName>', views.download_results),
+    path('', views.redirect)]
