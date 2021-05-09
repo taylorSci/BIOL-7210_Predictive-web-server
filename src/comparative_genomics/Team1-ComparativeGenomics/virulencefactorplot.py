@@ -58,11 +58,16 @@ ax.set_yticklabels(isolates)
 
 
 #adjust font size according to number of isolates--
-plt.xticks(fontsize=4)
-if len(isolates) <= 15:
-    plt.yticks(fontsize=8)
-if len(isolates) > 15:
-    plt.yticks(fontsize=4)
+if "VF_table" in options.i:
+	plt.xticks(fontsize=3)
+	plt.yticks(fontsize=3)
+if "res_table" in options.i:
+	plt.xticks(fontsize=8)
+	plt.yticks(fontsize=6)
+#if len(isolates) <= 15:
+#    plt.yticks(fontsize=6)
+#if len(isolates) > 15:
+#    plt.yticks(fontsize=3)
 
 plt.setp(ax.get_xticklabels(), rotation=90, ha="right",
          rotation_mode="anchor")
