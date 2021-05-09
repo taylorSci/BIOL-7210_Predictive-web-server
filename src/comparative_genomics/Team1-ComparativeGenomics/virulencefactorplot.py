@@ -60,7 +60,7 @@ ax.set_yticklabels(isolates)
 #adjust font size according to number of isolates--
 plt.xticks(fontsize=4)
 if len(isolates) <= 15:
-    plt.yticks(fontsize=10)
+    plt.yticks(fontsize=8)
 if len(isolates) > 15:
     plt.yticks(fontsize=4)
 
