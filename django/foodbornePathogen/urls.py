@@ -8,4 +8,4 @@ urlpatterns = [path('', views.index, name='index'),
                path('submitted/<uuid:job_id>', views.submitted, name='submitted'),
                path('info/', views.info, name='info'),
                path('results/<uuid:job_id>', views.results, name='results'),
-               path('static/<str:subdir>/<str:filename>', views.download_static)]
+               path('static/<path:subdir>/<str:filename>', views.download_static)]
