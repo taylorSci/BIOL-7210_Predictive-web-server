@@ -190,6 +190,8 @@ ul.main-menu li a.active:hover {
   font-size: 13px;
   font-weight: 300;
   text-transform: uppercase;
+  overflow: visible;
+  z-index: 9999;
 }
 
 /* Dropdown button on hover & focus */
@@ -201,6 +203,7 @@ ul.main-menu li a.active:hover {
 .dropdown {
   position: relative;
   display: inline-block;
+  z-index: 9999;
 }
 
 /* Dropdown Content (Hidden by Default) */
@@ -210,7 +213,8 @@ ul.main-menu li a.active:hover {
   background-color: #4e91c9;
   min-width: 160px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1;
+  z-index: 999999999999;
+  overflow: visible;
 }
 
 /* Links inside the dropdown */
@@ -219,6 +223,8 @@ ul.main-menu li a.active:hover {
   padding: 12px 16px;
   text-decoration: none;
   display: block;
+  overflow: visible;
+  z-index: 9999;
 }
 
 /* Change color of dropdown links on hover */
