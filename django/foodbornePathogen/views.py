@@ -47,7 +47,9 @@ def send_results_email(results_url, receiver_email):
     port = 465  # For SSL
     smtp_server = "smtp.gmail.com"
     sender_email = "fbpservernotify.predict2021@gmail.com"
-    password = open('/projects/team-1/devops/email.key', 'r')
+    f = open('/projects/team-1/devops/email.key')
+    password = f.readline()
+    f.close()
     message = ('Subject: Results | FOODBORNE PATHOGEN WEBSERVER\n'
                "Thank you for submitting your job to the Spring 2021"
                "Computational Genomics Team 1 Foodborne Pathogen Predictive Webserver.\n\n"
