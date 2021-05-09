@@ -418,7 +418,8 @@ def results(request, **kwargs):  # TODO Construct results page
     return render(request, 'foodbornePathogen/results.html', context)
 
 
-def download_static(request, subdir, filename):
+def download_static(request, filepath):
+    subdir, filename = osp.split(filepath)
     _, ext = osp.splitext(filename)
     if ext == '.txt':
         mode = 'r'
