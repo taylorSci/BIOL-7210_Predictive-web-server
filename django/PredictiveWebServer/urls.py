@@ -23,6 +23,7 @@ from . import views
 urlpatterns = [
     path('fbp/', include('foodbornePathogen.urls')),
     path('admin/', admin.site.urls),
-    path(f'{settings.MEDIA_ROOT[1:]}<str:userEmail>/<str:fileName>', views.download),
+    path(f'{settings.MEDIA_ROOT[1:]}<str:userEmail>/<str:fileName>', views.download_results),
+    path(f'/projects/team-1/django/foodbornePathogen/static/foodbornePathogen/<str:fileName>', views.download_static),
     path('', views.redirect),
 ]
