@@ -70,4 +70,4 @@ plt.setp(ax.get_xticklabels(), rotation=90, ha="right",
 
 #adjust plot size---------------------------------
 fig.set_size_inches(15, 4, forward=True)
-plt.savefig(options.o + '.png')
+plt.savefig(options.o + '.png', bbox_inches = 'tight')
