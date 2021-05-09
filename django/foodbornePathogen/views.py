@@ -151,7 +151,7 @@ def run_job(clientEmail, job, params):
         for isolate in isolates:
             logger.info(f'Link GP inputs to sample folder*************************{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta')
             os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta', f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}.fasta')
-            logger.info(f'Zip file inputs:**************************{MEDIA_ROOT}{clientEmail}/sample/{isolate}.fasta --> {MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}.zip')
+            logger.info(f'Zip file inputs:**************************{MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}.fasta --> {MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}.zip')
             os.chdir(f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/')
             sp.run(['zip', f'{isolate}.zip', f'{isolate}.fasta'])
 
@@ -169,10 +169,10 @@ def run_job(clientEmail, job, params):
         # Clean up junk files
         outputs = []
         for isolate in isolates:
-            logger.info(f'Select outputs from sample folder:****************************{MEDIA_ROOT}{clientEmail}/sample/{isolate}_gp.gff -> {MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}_gp.gff')
-            os.link(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}_gp.faa', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}_gp.faa')
-            os.link(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}_gp.fna', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}_gp.fna')
-            os.link(f'{MEDIA_ROOT}{clientEmail}/sample/{isolate}_gp.gff', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}_gp.gff')
+            logger.info(f'Select outputs from sample folder:****************************{MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}_gp.gff -> {MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}_gp.gff')
+            os.link(f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}_gp.faa', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}_gp.faa')
+            os.link(f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}_gp.fna', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}_gp.fna')
+            os.link(f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}_gp.gff', f'{MEDIA_ROOT}{clientEmail}/{job.id}_{isolate}_gp.gff')
             outputs.append(f'{job.id}_{isolate}_gp.faa')
             outputs.append(f'{job.id}_{isolate}_gp.fna')
             outputs.append(f'{job.id}_{isolate}_gp.gff')
@@ -191,7 +191,7 @@ def run_job(clientEmail, job, params):
         logger.info("Functional Annotation Pipeline Selected")
 
         # Select sample set
-        os.mkdir(f'{MEDIA_ROOT}{clientEmail}/sample/')
+        os.mkdir(f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/')
         for isolate in isolates:
             logger.info(f'Hardlink FA inputs into sample:*****************{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta --> {MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}.fasta')
             os.link(f'{MEDIA_ROOT}{clientEmail}/{"" if RANGE_INPUTS[pr]["FASTA"] else str(job.id) + "_"}{isolate}.fasta', f'{MEDIA_ROOT}{clientEmail}/sample_{job.id}/{isolate}.fasta')
