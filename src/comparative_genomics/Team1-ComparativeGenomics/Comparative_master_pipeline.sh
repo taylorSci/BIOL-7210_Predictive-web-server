@@ -320,7 +320,7 @@ if $parSNP; then
 		conda install toytree -c conda-forge -y
 	fi 
 	#run parsnp
-	parsnp -r $ref_genome -d ${all_input}/assembled_reads/ -o ${output_path}/parsnp/
+	parsnp -r $ref_genome -d ${all_input}/assembled_reads/ -o ${output_path}/parsnp/ -c
 
 	# generate tree with Toytree
 	python3 - << EOF
@@ -413,7 +413,7 @@ if $resistance; then
 	
 	#make the output directory 
 	mkdir -p ${output_path}/output/Deeparg
-	cp ${all_input}/*_fa.gff ${output_path}/output/Deeparg/
+	cp ${all_input}/*.gff ${output_path}/output/Deeparg/
 	cp /projects/team-1/src/comparative_genomics/subset_gff/*.gff ${output_path}/output/Deeparg/
 	rm ${output_path}/output/Deeparg/res_temp_$output.txt
 	rm ${output_path}/output/Deeparg/res_all_$output.txt
