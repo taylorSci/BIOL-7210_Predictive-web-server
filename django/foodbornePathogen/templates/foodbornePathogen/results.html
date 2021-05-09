@@ -17,24 +17,32 @@
 				<div>
 					<a href="/projects/team-1/django/foodbornePathogen/static/foodbornePathogen/README.txt" download="">README</a>
 				</div>
+				<br>
+				{% if first <= 0 and 0 <= last %}
 				<h2 class="h4">Genome Assembly Output</h2>
 				<div>
 					<a href="{{ userDir }}/GA_{{ jobID }}.zip" download=""> Genome Assembly Output Files (.zip)
 					</a>
 				</div>
 				<br></br>
+				{% endif %}
+				{% if first <= 1 and 1 <= last %}
 				<h2 class="h4">Gene Prediction Output</h2>
 				<div>
 					<a href="{{ userDir }}/GP_{{ jobID }}.zip" download> Gene Prediction Output Files(.zip)
 					</a>
 				</div>
 				<br></br>
+				{% endif %}
+				{% if first <= 2 and 2 <= last %}
 				<h2 class="h4">Functional Annotation Output</h2>
 				<div>
 					<a href="{{ userDir }}/FA_{{ jobID }}.zip" download=""> Functional Annotation Output Files(.zip)
 					</a>
 				</div>
 				<br></br>
+				{% endif %}
+				{% if first <= 3 and 3 <= last %}
 				<h2 class="h4">Comparative Genomics Output</h2>
 				<div>
 					<a href="{{ userDir }}/MLSTtree_{{ jobID }}.pdf" download=""> MLST Tree (.pdf)
@@ -66,6 +74,7 @@
 						</div>
 					</div>
 				</div>
+				{% endif %}
 			</div>
 		</div>
     </main>

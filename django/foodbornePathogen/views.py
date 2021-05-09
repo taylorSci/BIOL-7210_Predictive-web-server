@@ -5,6 +5,7 @@ import subprocess as sp
 from subprocess import PIPE
 import logging
 import os
+import mimetypes
 
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
@@ -410,4 +411,19 @@ def results(request, **kwargs):  # TODO Construct results page
     context = deepcopy(CONTEXT)
     context['userDir'] = f"{MEDIA_ROOT}{Job.objects.get(id=kwargs['job_id']).user.email}"
     context['jobID'] = kwargs['job_id']
+    pipelineRange = Job.objects.get(id=kwargs['job_id']).pipeRange
+    context['first'], context['last'] = RANGES[pipelineRange]
     return render(request, 'foodbornePathogen/results.html', context)
+
+
+def download_static(request, subdir, filename):
+    _, ext = osp.splitext(filename)
+    if ext == '.txt':
+        mode = 'r'
+    elif ext == '.zip':
+        mode = 'rb'
+    with open(f'/projects/team-1/django/foodbornePathogen/static/foodbornePathogen/{subdir}/{filename}', mode) as dl:
+        mimeType = mimetypes.guess_type(f'{filename}')
+        response = HttpResponse(dl, content_type=mimeType)
+        response['Content-Disposition'] = f"attachment; filename={filename}"
+        return response
