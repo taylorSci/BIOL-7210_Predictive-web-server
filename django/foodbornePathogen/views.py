@@ -412,6 +412,8 @@ def results(request, **kwargs):  # TODO Construct results page
     context = deepcopy(CONTEXT)
     context['userDir'] = f"{MEDIA_ROOT}{Job.objects.get(id=kwargs['job_id']).user.email}"
     context['jobID'] = kwargs['job_id']
+    pipelineRange = Job.objects.get(id=kwargs['job_id']).pipeRange
+    context['first'], context['last'] = RANGES[pipelineRange]
     return render(request, 'foodbornePathogen/results.html', context)
 
 
