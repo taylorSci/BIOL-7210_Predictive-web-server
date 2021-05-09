@@ -199,6 +199,16 @@ if $stringMLST; then
 	#fi
 	
 	mkdir -p ${all_input}/raw_reads/
+	isolates=$(ls ${all_input}/*.zip | xargs -I % basename % .zip)
+	echo "******input directory is $isolates"
+	for i in $isolates
+	do
+        	echo "*********unzipping $i in $isolates"
+        	unzip -o $all_input/$i.zip -d $output_path
+        	#mv $all_input/$i/* $output_path/
+        	#rmdir $all_input/$i/
+	done
+
 	cp ${all_input}/*.fq.gz ${all_input}/raw_reads/
 
 	# check if Sample name provided alongside stringMLST flag
