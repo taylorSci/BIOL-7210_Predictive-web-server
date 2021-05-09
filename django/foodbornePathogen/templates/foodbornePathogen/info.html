@@ -21,6 +21,7 @@
 					Each isolate you wish to process must be uploaded as an individual .zip. You may upload multiple isolates.
 					Each .zip must contain all dependencies required for that pipeline segment shown in the dot matrix graph shown below.
 					File extensions must match the table exactly.
+					Parenthesized inputs are optional depending on whether the user has requested the corresponding outputs shown in the data dependecy chart below.
 					All files must have the same basename as the zip file containing them, with the exception of FASTQ files.
 					Paired-end read FASTQ files must be individually gunzipped as {isolateBasename}_1.fq.gz & {isolateBasename}_2.fq.gz, zipped into {isolateBasename}.zip which is zipped inside the isolate .zip.
 					If only FASTQ files are required, the redundant nested .zip folder should be eliminated.
