@@ -364,7 +364,7 @@ def options(request, **kwargs):
             os.rename(f'{MEDIA_ROOT}{isolate.upload}', f'{MEDIA_ROOT}{userEmail}/{isolate.upload}.zip')  # Extension & user folder are removed in file saving, so must be restored
             if first:  # If requested job does not start with genome assembly (i.e. uploaded files are not reads), unzip uploads
                 os.rename(f'{MEDIA_ROOT}{userEmail}/{isolate.upload}.zip', f'{MEDIA_ROOT}{userEmail}/{isolate.upload}_.zip')
-                sp.run(['unzip', '-d', f'{MEDIA_ROOT}{userEmail}/', f'{MEDIA_ROOT}{userEmail}/{isolate.upload}_.zip'])  # Assume client has given same filenames to contents as outer TODO Eliminate assumption
+                sp.run(['unzip', '-o', '-d', f'{MEDIA_ROOT}{userEmail}/', f'{MEDIA_ROOT}{userEmail}/{isolate.upload}_.zip'])  # Assume client has given same filenames to contents as outer TODO Eliminate assumption
                 os.remove(f'{MEDIA_ROOT}{userEmail}/{isolate.upload}_.zip')
             sample = Sample(isolate=isolate, job=job)
             sample.save()
