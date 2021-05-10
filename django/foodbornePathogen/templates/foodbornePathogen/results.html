@@ -15,7 +15,7 @@
 		<div class="projects-holder text-center">
 			<div class="row">
 				<div>
-					<a href="static/README.txt" download="">README</a>
+					<a href="static/README.txt" download="">Output Info (.txt)</a>
 				</div>
 				<br>
 				{% if first <= 0 and 0 <= last %}
@@ -50,26 +50,33 @@
 					<br>
 					<a href="{{ userDir }}/SNP_{{ jobID }}.pdf" download=""> SNP Tree (.pdf)
 					</a>
+					<br>
+					<a href="{{ userDir }}/ANIm_percentage_identity_{{ jobID }}.png" download=""> ANI Heatmap (.png)
+					</a>
+					<br>
+					<a href="{{ userDir }}/res_table_{{ jobID }}.png" download=""> Resistance Genes Table (.png)
+					</a>
+					<br>
+					<a href="{{ userDir }}/VF_table_{{ jobID }}.png" download=""> Virulence Factors Heatmap (.png)
+					</a>
 
-					<h2 class="h6">ANI heatmap:</h2>
+
+					<p>&nbsp;</p>
+					<h2 class="h4">ANI Heatmap:</h2>
 					<div class="img">
-							<img src="{{ userDir }}/ANIm_percentage_identity_{{ jobID }}.png" alt="", style="width:350px;height:350px;">
+					  <img src="{{ userDir }}/ANIm_percentage_identity_{{ jobID }}.png" alt="", style="width:35%">
 					</div>
 
+					<p>&nbsp;</p> 
+					<h2 class="h4">Resistance Genes Table:</h2>
 					<div class="img">
-						<h2 class="h6">Virulence factors heatmap:</h2>
-						<div class="img/1">
-							<div class="project-item">
-								<img src="{{ userDir }}/VF_table_{{ jobID }}.png" alt="" class="center" width=95% style="text-align:center;">
-							</div>
-						</div>
+					  <img src="{{ userDir }}/res_table_{{ jobID }}.png" alt="", class="center" style="width:35%">
 					</div>
 
+					<p>&nbsp;</p> 
+					<h2 class="h4">Virulence Factors Heatmap:</h2>
 					<div class="img">
-						<h2 class="h6">Resistance genes table:</h2>
-						<div class="img">
-						  <img src="{{ userDir }}/res_table_{{ jobID }}.png" alt="", class="center" style="width:350px;height:350px:">
-						</div>
+					  <img src="{{ userDir }}/VF_table_{{ jobID }}.png" alt="" class="rotate90" style="width:90%">
 					</div>
 				</div>
 				{% endif %}
