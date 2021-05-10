@@ -48,7 +48,7 @@ def send_results_email(results_url, receiver_email):
     smtp_server = "smtp.gmail.com"
     sender_email = "fbpservernotify.predict2021@gmail.com"
     f = open('/projects/team-1/devops/email.key')
-    password = f.readline()
+    password = f.readline().strip()
     f.close()
     message = ('Subject: Results | Foodborne Pathogen Webserver\n'
                "Thank you for submitting your job to the Spring 2021"
@@ -342,7 +342,7 @@ def options(request, **kwargs):
 
     elif request.method == 'POST':
         # Make/get user
-        userEmail = request.POST['email']
+        userEmail = request.POST['email'].strip()
         try:
             user = User.objects.get(email=userEmail)
         except ObjectDoesNotExist:
