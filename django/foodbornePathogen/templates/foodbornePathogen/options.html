@@ -18,14 +18,15 @@
             {% csrf_token %}
             {% load static %}
              <style>
-                  table {
+               table {
                     border-collapse: separate;
-                    border-spacing: 5px 15px;
+                    border-spacing: 10px 15px;
                     margin-left: 350px;
                   }
                   th {
                     background-color: #3d9fdb;
                     color: white;
+		    font-weight: bold;
                   }
                   th,
                   td {
@@ -35,7 +36,7 @@
                     padding: 4px;
                   }
                   h2 {
-                    color: #3d9fdb;
+                      color: #3d9fdb;
                   }
             </style>
             <table border= "3">
@@ -54,7 +55,7 @@
                 
             {% endfor %}
             <br></br>
-            <div style="text-align: center;"><input type="submit" value="Submit Job"></div>
+            <div style="text-align: center;"><input type="submit" value="Submit Job" style="color: black;font-weight: bold"></div>
             <br></br>
         </form>
     </main>
