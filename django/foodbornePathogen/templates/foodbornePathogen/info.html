@@ -12,38 +12,40 @@
 	<main>
 	<div class="home-intro text-center">
 				<h2 class="welcome-title animated fadeInLeft">Pipeline Information</h2>
-				<p class="animated fadeInRight">This foodborne pathogen analysis pipeline performs genomics analysis on <i style="font-style: italic;">C.jejuni</i> isolates. The full pipeline contains these four steps: genome analysis, gene prediction, functional annotation, and comparative genomics. The pipeline can be run in full, as individual steps, or as any consecutive combination of steps.</p>
+				<p class="animated fadeInRight">This foodborne pathogen analysis pipeline performs genomics analysis on <i style="font-style: italic;">C.jejuni</i> isolates. The full pipeline contains these four steps: genome analysis, gene prediction, functional annotation, and comparative genomics. The pipeline can be run in full, as individual steps, or as any consecutive combination of steps. </p>		 
 				<h2 class="welcome-title animated fadeInLeft">Instructions</h2>
-				<p class="animated fadeInRight">
-					1. Access the pipeline steps you would like to run using the Run Pipeline button.
+				</div><!----><div class="home-intro text-left"  style="margin-left:250px; margin-right:250px; font-size:120%;">
+				<p class="animated fadeInRight" style="text-align:right; line-height:0px;">
+				<ul class="animated fadeInRight" style="list-style-type:square; margin-top:-70px;">
+					<li>Access the pipeline steps you would like to run using the Run Pipeline button.</li>
 					<br></br>
-					2. Enter your email and upload required files.
-					Each isolate you wish to process must be uploaded as an individual .zip. You may upload multiple isolates.
-					Each .zip must contain all dependencies required for that pipeline segment shown in the dot matrix graph shown below.
-					File extensions must match the table exactly.
-					Parenthesized inputs are optional depending on whether the user has requested the corresponding outputs shown in the data dependecy chart below.
-					All files must have the same basename as the zip file containing them, with the exception of FASTQ files.
-					Paired-end read FASTQ files must be individually gunzipped as {isolateBasename}_1.fq.gz & {isolateBasename}_2.fq.gz, zipped into {isolateBasename}.zip which is zipped inside the isolate .zip.
-					If only FASTQ files are required, the redundant nested .zip folder should be eliminated.
+					<li>Enter your email and upload required files. <br></br> 
+					Each isolate you wish to process must be uploaded as an individual .zip. You may upload multiple isolates. <br></br>
+					Each .zip must contain all dependencies required for that pipeline segment shown in the dot matrix graph shown below. <br></br>
+					File extensions must match the table exactly. <br></br>
+					Parenthesized inputs are optional depending on whether the user has requested the corresponding outputs shown in the data dependecy chart below. <br></br>
+					All files must have the same basename as the zip file containing them, with the exception of FASTQ files. <br></br>
+					Paired-end read FASTQ files must be individually gunzipped as {isolateBasename}_1.fq.gz & {isolateBasename}_2.fq.gz, zipped into {isolateBasename}.zip which is zipped inside the isolate .zip. <br></br>
+					If only FASTQ files are required, the redundant nested .zip folder should be eliminated. <br></br>
+					</li>
 					<br></br>
-		<p style="text-align:center;"><img src="{% static 'foodbornePathogen/img/FileTypes.jpg' %}" alt = "File Type Matrix" class="center" width=80%>
-					<br></br>
+		<p style="text-align:center;"><img src="{% static 'foodbornePathogen/img/FileTypes.jpg' %}" alt = "File Type Matrix" class="center" width=110%>
 					Empty dummy files to exemplify that data upload for various jobs:
-						<a href="static/dummy/GA/isolateName.zip">Full Pipeline</a>
-						<a href="static/dummy/GP/isolateName.zip">Gene Prediction</a>
-						<a href="static/dummy/FA/isolateName.zip">Functional Annotation</a>
-						<a href="static/dummy/CG/isolateName.zip">Comparative Genomics</a>
-		<p style="text-align:center;"><img src="{% static 'foodbornePathogen/img/FileTypes.jpg' %}" alt = "File Type Matrix" class="center">
+					<a href="static/dummy/GA/isolateName.zip">Full Pipeline</a>
+					<a href="static/dummy/GP/isolateName.zip">Gene Prediction</a>
+					<a href="static/dummy/FA/isolateName.zip">Functional Annotation</a>
+					<a href="static/dummy/CG/isolateName.zip">Comparative Genomics</a>
 					<br></br>
-					3. Select pipeline and analysis options.
+					<li>Select pipeline and analysis options.</li>
 					<br></br>
-					4. Click submit. Depending on the size of your upload, it may take a few minutes before you are redirected to a submission confirmation page. Do NOT navigate away from this page until the redirect is complete.
-					A results page will be sent to the email provided with links to download analysis results.
+					<li>Click submit. Depending on the size of your upload, it may take a few minutes before you are redirected to a submission confirmation page. Do NOT navigate away from this page until the redirect is complete.
+					A results page will be sent to the email provided with links to download analysis results.</li>
 					<br></br>
 					For more information on options, file types, and analysis methods, please refer to our <a href="https://github.gatech.edu/comgenomics2021/Team1-WebServer">GitHub</a> and <a href="https://compgenomics2021.biosci.gatech.edu/Team_I_Webserver">Wiki</a> pages. A diagram of the pipeline is shown below.
 				</p>
 			</div>
 		<p style="text-align:center;"> <img src="{% static 'foodbornePathogen/img/pipeline.jpg' %}" alt="pipeline" class="center" width=90%>
+		</ul>
 	</main>
 {% endblock %}
 </body>
