@@ -50,7 +50,7 @@ def send_results_email(results_url, receiver_email):
     f = open('/projects/team-1/devops/email.key')
     password = f.readline()
     f.close()
-    message = ('Subject: Results | FOODBORNE PATHOGEN WEBSERVER\n'
+    message = ('Subject: Results | Foodborne Pathogen Webserver\n'
                "Thank you for submitting your job to the Spring 2021"
                "Computational Genomics Team 1 Foodborne Pathogen Predictive Webserver.\n\n"
                "You're job has been completed. Results can be viewed at:\n"
@@ -94,12 +94,10 @@ def get_client_args(params, stage):
 
 
 def run_job(clientEmail, job, params):
-    logger.info('------------ run_job(clientEmail, files, job, params) -----------')
+    logger.info('---------------- run_job(clientEmail, files, job, params) ---------------')
     logger.info('clientEmail = ' + clientEmail)
     logger.info('job.id = ' + str(job.id))
     logger.info('job.pipeRange = ' + str(job.pipeRange))
-
-    send_results_email(str(BASE_URL) + "fbp/results/" + str(job.id), clientEmail)
 
     # Determine job characteristics
     pr = job.pipeRange
@@ -310,7 +308,7 @@ def run_job(clientEmail, job, params):
         isolate.save()
 
     # Contact user  TODO Figure out how to send email; Alternative is just to print out the link on results.
-    # send_mail("Foodborn Pathogen job completed", MESSAGE.format(BASE_URL, job.id), from_email=None, recipient_list=[clientEmail])
+    send_results_email(str(BASE_URL) + "fbp/results/" + str(job.id), clientEmail)
 
 
 def index(request):
