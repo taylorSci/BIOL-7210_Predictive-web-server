@@ -59,11 +59,11 @@ ax.set_yticklabels(isolates)
 
 #adjust font size according to number of isolates--
 if "VF_table" in options.i:
-	plt.xticks(fontsize=3)
-	plt.yticks(fontsize=3)
+	plt.xticks(fontsize=9)
+	plt.yticks(fontsize=9.5)
 if "res_table" in options.i:
-	plt.xticks(fontsize=8)
-	plt.yticks(fontsize=6)
+	plt.xticks(fontsize=25)
+	plt.yticks(fontsize=25)
 #if len(isolates) <= 15:
 #    plt.yticks(fontsize=6)
 #if len(isolates) > 15:
@@ -74,5 +74,5 @@ plt.setp(ax.get_xticklabels(), rotation=90, ha="right",
 
 
 #adjust plot size---------------------------------
-fig.set_size_inches(15, 4, forward=True)
+fig.set_size_inches(40, 25, forward=True)
 plt.savefig(options.o + '.png', bbox_inches = 'tight')
